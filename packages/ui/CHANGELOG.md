@@ -118,7 +118,7 @@
 
 ### Patch Changes
 
-- 96ad78a: 디자인팀 v0.7.2 재검수의 자동 처리 가능 항목 6건 정리. 디자인 조율이 필요한 7건은 [`docs/for-design-team/followup.md`](docs/for-design-team/followup.md)로 분리.
+- 96ad78a: 디자인팀 v0.7.2 재검수의 자동 처리 가능 항목 6건 정리. 디자인 조율이 필요한 7건은 [`docs/for-design-team/followup.md`](../../docs/for-design-team/followup.md)로 분리.
 
   **`variant="outline"` (deprecated) → `variant="tertiary"` 일괄 마이그레이션 (22곳)**
 
@@ -153,7 +153,7 @@
 
   **Follow-up — 디자인 조율 필요한 7건**
 
-  [`docs/for-design-team/followup.md`](docs/for-design-team/followup.md):
+  [`docs/for-design-team/followup.md`](../../docs/for-design-team/followup.md):
 
   1. Button Tertiary 2종 분리 (흰 배경 + 회색 배경)
   2. Modal/Dialog 풀 너비 버튼 레이아웃

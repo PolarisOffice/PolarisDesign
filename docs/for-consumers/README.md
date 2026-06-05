@@ -59,6 +59,6 @@
 | 다크모드 색이 안 바뀜 | [`install.md`](install.md#트러블슈팅) — `tokens.css` import 위치 |
 | 페이지 시각이 화면마다 달라 보임 | [`getting-started.md`](getting-started.md#d-무엇을-결과로-기대해야-하나) 의 시각 정체성 체크리스트 |
 | Next.js App Router 에서 컴포넌트가 막힘 | [`migration/rsc-patterns.md`](migration/rsc-patterns.md) |
-| 새 폴라리스 버전 떴는데 모름 | [`install.md`](install.md#upstream-release-알림) |
+| 새 폴라리스 버전 떴는데 모름 | [`install.md`](install.md#upstream-release-알림--새-버전이-떴을-때-어떻게-알-것인가) |
 
 해결 안 되는 갭은 [`../for-contributors/roadmap.md`](../for-contributors/roadmap.md) 의 컨슈머 피드백 묶음에 등재됐는지 확인 후, 없으면 새 항목으로 issue 또는 PR.

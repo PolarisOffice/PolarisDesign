@@ -134,7 +134,7 @@ CI는 `.github/workflows/ci.yml`, 데모 배포는 `.github/workflows/deploy.yml
 - [DESIGN.md](DESIGN.md) — 토큰·타이포·컴포넌트 spec (auto-generated, Stitch 형식)
 - [AGENTS.md](AGENTS.md) — Codex/Cursor 등 비-Claude 에이전트 절차
 - [docs/for-contributors/roadmap.md](docs/for-contributors/roadmap.md) — 릴리즈별 계획
-- [docs/migration/](docs/migration/) — 버전별 마이그레이션 가이드
+- [docs/for-consumers/migration/](docs/for-consumers/migration/) — 버전별 마이그레이션 가이드
 - [assets/README.md](assets/README.md) — Figma export 갱신 절차
 
 ## 로드맵 — 한눈에

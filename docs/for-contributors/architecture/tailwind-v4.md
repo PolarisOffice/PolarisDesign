@@ -16,7 +16,7 @@ v0.4.0부터 `@polaris/ui`가 **v4-네이티브 CSS 파일**을 함께 ship합�
 
 이 두 줄이면 끝입니다. v3 preset과 **동일한 클래스명**(`bg-accent-brand-normal`, `text-label-normal`, `rounded-polaris-md`, `text-polaris-body2`, `font-polaris`, `shadow-polaris-sm` 등 v0.8 spec 이름)이 v4에서도 그대로 작동합니다.
 
-> **v0.8에서 alias 제거** — `bg-brand-primary` / `text-fg-primary` / `bg-surface-raised` / `bg-status-danger` / `text-polaris-body-sm` / `text-polaris-h1`~`-h5` / `rounded-polaris-full` / 컬러 ramp `5` (선행 0 없는) 같은 v0.6/rc.0/v0.7 alias는 **v3 preset과 v4 theme 모두에서 emit되지 않습니다.** 그대로 작성한 코드는 dead-class. 마이그레이션: `pnpm dlx @polaris/lint polaris-codemod-v08 --apply src` (자세히 → [`docs/for-consumers/migration/v0.7-to-v0.8.md`](migration/v0.7-to-v0.8.md)).
+> **v0.8에서 alias 제거** — `bg-brand-primary` / `text-fg-primary` / `bg-surface-raised` / `bg-status-danger` / `text-polaris-body-sm` / `text-polaris-h1`~`-h5` / `rounded-polaris-full` / 컬러 ramp `5` (선행 0 없는) 같은 v0.6/rc.0/v0.7 alias는 **v3 preset과 v4 theme 모두에서 emit되지 않습니다.** 그대로 작성한 코드는 dead-class. 마이그레이션: `pnpm dlx @polaris/lint polaris-codemod-v08 --apply src` (자세히 → [`docs/for-consumers/migration/v0.7-to-v0.8.md`](../../for-consumers/migration/v0.7-to-v0.8.md)).
 
 ---
 

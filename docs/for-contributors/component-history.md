@@ -162,7 +162,7 @@ rg '<Stat[^>]*\bdeltaTone='               # → deltaVariant=
 rg '<(H|V)Stack'                          # → <Stack direction="row"|"">
 ```
 
-이외 토큰 / Tailwind 클래스 / CSS 변수 alias 제거는 codemod 한 번이면 모두 정리. 자세히: [`docs/for-consumers/migration/v0.7-to-v0.8.md`](migration/v0.7-to-v0.8.md).
+이외 토큰 / Tailwind 클래스 / CSS 변수 alias 제거는 codemod 한 번이면 모두 정리. 자세히: [`docs/for-consumers/migration/v0.7-to-v0.8.md`](../for-consumers/migration/v0.7-to-v0.8.md).
 
 ---
 
