@@ -2,7 +2,7 @@
 
 > **AUTO-GENERATED** — `pnpm --filter @polaris/ui build:component-catalog` 또는 매 `pnpm build` 시 자동 갱신. 본문 직접 수정 금지 — `packages/ui/src/components/*.tsx` 의 JSDoc 또는 `components/index.ts` 의 Tier 주석을 수정하세요.
 
-현재 45 family export. 자세한 spec / variant axis 는 [`/DESIGN.md`](../../DESIGN.md) §4 참조.
+현재 48 family export. 자세한 spec / variant axis 는 [`/DESIGN.md`](../../DESIGN.md) §4 참조.
 
 ---
 
@@ -24,7 +24,7 @@
 | `<NovaInput>` | Called when the user presses Enter or clicks the send button. |
 | `<DropdownMenu>` | Render the item with status-danger color (for delete / destructive actions). |
 | `<Tooltip>` | Convenience: standalone Tooltip with text content. |
-| `<Select>` | — |
+| `<Select>` | Above-label rendered over the trigger. |
 | `<Sidebar>` | Collapse to icon-only mode (4rem wide). |
 | `<Navbar>` | Render the child element instead of `<div>`. |
 | `<PromptChip>` | Optional icon shown at the start (typically a lucide icon at h-4 w-4). |
@@ -90,6 +90,14 @@
 | `<CircularProgress>` | CircularProgress — radial progress indicator. |
 | `<Accordion>` | Accordion — multi-item disclosure group. |
 | `<Combobox>` | Optional description rendered below the label in the popover. |
+
+## Tier 3.9 — form field groups + container (v0.8.0-rc.9)
+
+| Component | 설명 |
+|---|---|
+| `<CheckboxGroup>` | When the group is in error state, items pass `error` flag through to Checkbox styling. |
+| `<RadioGroup>` | Group legend rendered above the radio grid. |
+| `<FieldGroup>` | Optional label rendered above the group (no `<fieldset>`/`<legend>` — pure visual heading). |
 
 ---
 

@@ -6,7 +6,7 @@
  *
  * For range, see `<DateRangePicker>`.
  */
-import { forwardRef, useState } from 'react';
+import { forwardRef, useId, useState, type ReactNode } from 'react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { CalendarIcon } from 'lucide-react';
@@ -16,6 +16,7 @@ import { Popover, PopoverTrigger, PopoverContent } from './Popover';
 import { Calendar } from './Calendar';
 import { Button } from './Button';
 import { cn } from '../lib/cn';
+import { FieldShell, fieldA11y } from '../lib/field-shell';
 
 export interface DatePickerProps {
   value?: Date;
@@ -60,6 +61,20 @@ export interface DatePickerProps {
   required?: boolean;
   /** Form id this hidden input belongs to (rare; only when outside a `<form>` ancestor). */
   form?: string;
+  /**
+   * Above-label rendered over the trigger (v0.8.0-rc.9). Pairs with
+   * `helperText` / `error` for the standard form-field layout matching
+   * `<Select>` / `<Combobox>` / `<DateTimeInput>`.
+   */
+  label?: ReactNode;
+  /** Helper text below the trigger. */
+  helperText?: ReactNode;
+  /** Error message — flips border to state-error and renders ⚠ icon below. */
+  error?: ReactNode;
+  /** Class for the outer FieldShell container. */
+  containerClassName?: string;
+  /** Stable id for the trigger (so external labels wire up). Auto-generated if omitted. */
+  id?: string;
 }
 
 export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
@@ -76,17 +91,32 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
     valueFormat = 'yyyy-MM-dd',
     required,
     form,
+    label,
+    helperText,
+    error,
+    containerClassName,
+    id: providedId,
   }, ref) => {
     const [open, setOpen] = useState(false);
-    return (
+    const generatedId = useId();
+    const id = providedId ?? generatedId;
+    const isError = Boolean(error);
+    const hasMessage = Boolean(error || helperText);
+    const inner = (
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             ref={ref}
+            {...fieldA11y(id, isError, hasMessage)}
             variant="tertiary"
             disabled={disabled}
             aria-label={ariaLabel}
-            className={cn('w-full justify-start font-normal', !value && 'text-label-alternative', className)}
+            className={cn(
+              'w-full justify-start font-normal',
+              !value && 'text-label-alternative',
+              isError && 'border border-state-error focus-visible:border-state-error',
+              className,
+            )}
           >
             <CalendarIcon className="h-4 w-4" />
             {value ? format(value, formatStr, { locale }) : placeholder}
@@ -126,6 +156,21 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
         </PopoverContent>
       </Popover>
     );
+
+    if (label || helperText || error) {
+      return (
+        <FieldShell
+          label={label}
+          helperText={helperText}
+          error={error}
+          containerClassName={containerClassName}
+          id={id}
+        >
+          {inner}
+        </FieldShell>
+      );
+    }
+    return inner;
   }
 );
 DatePicker.displayName = 'DatePicker';
@@ -139,6 +184,16 @@ export interface DateRangePickerProps {
   disabled?: boolean;
   className?: string;
   ariaLabel?: string;
+  /** Above-label rendered over the trigger (v0.8.0-rc.9). */
+  label?: ReactNode;
+  /** Helper text below the trigger. */
+  helperText?: ReactNode;
+  /** Error message — flips border to state-error and renders ⚠ icon below. */
+  error?: ReactNode;
+  /** Class for the outer FieldShell container. */
+  containerClassName?: string;
+  /** Stable id for the trigger. Auto-generated if omitted. */
+  id?: string;
 }
 
 export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProps>(
@@ -151,23 +206,38 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
     disabled,
     className,
     ariaLabel = '기간 선택',
+    label,
+    helperText,
+    error,
+    containerClassName,
+    id: providedId,
   }, ref) => {
     const [open, setOpen] = useState(false);
+    const generatedId = useId();
+    const id = providedId ?? generatedId;
+    const isError = Boolean(error);
+    const hasMessage = Boolean(error || helperText);
     const display = value?.from
       ? value.to
         ? `${format(value.from, formatStr, { locale })} ~ ${format(value.to, formatStr, { locale })}`
         : format(value.from, formatStr, { locale })
       : placeholder;
 
-    return (
+    const inner = (
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             ref={ref}
+            {...fieldA11y(id, isError, hasMessage)}
             variant="tertiary"
             disabled={disabled}
             aria-label={ariaLabel}
-            className={cn('w-full justify-start font-normal', !value?.from && 'text-label-alternative', className)}
+            className={cn(
+              'w-full justify-start font-normal',
+              !value?.from && 'text-label-alternative',
+              isError && 'border border-state-error focus-visible:border-state-error',
+              className,
+            )}
           >
             <CalendarIcon className="h-4 w-4" />
             {display}
@@ -185,6 +255,21 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
         </PopoverContent>
       </Popover>
     );
+
+    if (label || helperText || error) {
+      return (
+        <FieldShell
+          label={label}
+          helperText={helperText}
+          error={error}
+          containerClassName={containerClassName}
+          id={id}
+        >
+          {inner}
+        </FieldShell>
+      );
+    }
+    return inner;
   }
 );
 DateRangePicker.displayName = 'DateRangePicker';

@@ -343,8 +343,13 @@
 | 3.8 | AvatarGroup | v0.7.7 | overlap + +N | overlap 간격 / +N 버튼 |
 | Ribbon | Ribbon family (25+ 종) | v0.7.0 | Office-style 리본 + 91 ribbon-icons | 그룹 spacing / 분리자 / 멀티컬러 아이콘 |
 | Form | Form / FormField / FormItem / FormLabel / FormControl / FormMessage | v0.7.0 | react-hook-form + zod 통합 | 에러 layout (정합 검증 완료) |
+| 1 | SelectField | v0.8.0-rc.9 🆕 | Select + above-label wrapper (label/helperText/error prefab) | label↔trigger 간격 / focus ring spec (Input과 동일하게 진행 중) |
+| 2 | CheckboxGroup / RadioGroup | v0.8.0-rc.9 🆕 | fieldset + legend + 반응형 그리드 (cols 1~4) | legend typography / item gap / cols breakpoint 권장값 confirm |
+| 2.5 | FieldGroup | v0.8.0-rc.9 🆕 | 폼 필드 visual grouping container (plain / boxed) | **boxed variant spec confirm 필요** — 현재 권장값: `bg-fill-neutral` + `radius-md` + `p-md`. 옵션 박스 (관리자 / 설정 화면) 표준화 |
 
 > **요청**: 위 컴포넌트들 중 디자인팀이 spec을 정식으로 정의해 주실 우선순위 후보를 알려 주세요. 우리는 코드와 figma export로 현재 상태를 보내 드릴 수 있습니다.
+>
+> **v0.8.0-rc.9 신규 3건** (SelectField / CheckboxGroup+RadioGroup / FieldGroup) 은 KCAS-platform + webhook 폼 컨슈머 보고로 패턴이 부족함이 확인되어 *우선 ship* 했습니다. 디자인팀 검토 후 spec 조정 가능.
 
 ### 도구 / 자동화 — 정의서엔 시스템 자체에 대한 spec 외엔 없는 영역 (디자인팀 인지만 필요)
 

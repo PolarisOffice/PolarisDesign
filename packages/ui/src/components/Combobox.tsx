@@ -9,6 +9,7 @@ import { Check, ChevronsUpDown, X } from 'lucide-react';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './Command';
 import { Popover, PopoverContent, PopoverTrigger } from './Popover';
 import { cn } from '../lib/cn';
+import { FieldShell, fieldA11y } from '../lib/field-shell';
 
 /* ================================================================== *
  * Combobox — searchable Select                                v0.7.7
@@ -90,6 +91,18 @@ export type ComboboxProps<V extends string = string> = (SingleProps<V> | MultiPr
   /** ARIA label / id for the trigger. */
   id?: string;
   ariaLabel?: string;
+  /**
+   * Above-label rendered over the trigger (v0.8.0-rc.9). Matches the
+   * `<Select>` / `<DateTimeInput>` / `<FileInput>` API so form layouts
+   * stay consistent across picker-style controls.
+   */
+  label?: ReactNode;
+  /** Helper text below the trigger (between trigger and error). */
+  helperText?: ReactNode;
+  /** Error message — flips border to state-error and renders ⚠ icon below. */
+  error?: ReactNode;
+  /** Class for the outer container (the FieldShell wrapper). */
+  containerClassName?: string;
 };
 
 export function Combobox<V extends string = string>(props: ComboboxProps<V>) {
@@ -104,7 +117,13 @@ export function Combobox<V extends string = string>(props: ComboboxProps<V>) {
     contentClassName,
     id: providedId,
     ariaLabel,
+    label,
+    helperText,
+    error,
+    containerClassName,
   } = props;
+  const isError = Boolean(error);
+  const hasMessage = Boolean(error || helperText);
 
   const generatedId = useId();
   const id = providedId ?? generatedId;
@@ -174,7 +193,7 @@ export function Combobox<V extends string = string>(props: ComboboxProps<V>) {
 
   const showClear = clearable && !disabled && selectedSet.size > 0;
 
-  return (
+  const triggerElement = (
     <Popover open={open} onOpenChange={setOpen}>
       {/*
         Wrapper div hosts the trigger button + the clear button as
@@ -189,7 +208,7 @@ export function Combobox<V extends string = string>(props: ComboboxProps<V>) {
         <PopoverTrigger asChild>
           <button
             ref={triggerRef}
-            id={id}
+            {...fieldA11y(id, isError, hasMessage)}
             type="button"
             role="combobox"
             aria-expanded={open}
@@ -197,9 +216,11 @@ export function Combobox<V extends string = string>(props: ComboboxProps<V>) {
             disabled={disabled}
             className={cn(
               'inline-flex h-10 w-full items-center gap-2 rounded-polaris-md',
-              'border border-line-normal bg-background-base py-2',
+              'border bg-background-base py-2',
+              isError ? 'border-state-error' : 'border-line-normal',
               'text-polaris-body2 font-polaris text-label-normal whitespace-nowrap',
-              'focus-visible:outline-none focus-visible:shadow-polaris-focus focus-visible:border-accent-brand-normal',
+              'focus-visible:outline-none focus-visible:shadow-polaris-focus',
+              isError ? 'focus-visible:border-state-error' : 'focus-visible:border-accent-brand-normal',
               'disabled:cursor-not-allowed disabled:opacity-50',
               // Right-padding makes room for the chevron + (optional)
               // sibling clear button outside the trigger.
@@ -275,5 +296,23 @@ export function Combobox<V extends string = string>(props: ComboboxProps<V>) {
       </PopoverContent>
     </Popover>
   );
+
+  // When `label` / `helperText` / `error` are set, wrap in FieldShell for
+  // the standard above-label + helperText + ErrorIcon layout. Otherwise
+  // render the trigger by itself so existing inline usages stay compact.
+  if (label || helperText || error) {
+    return (
+      <FieldShell
+        label={label}
+        helperText={helperText}
+        error={error}
+        containerClassName={containerClassName}
+        id={id}
+      >
+        {triggerElement}
+      </FieldShell>
+    );
+  }
+  return triggerElement;
 }
 Combobox.displayName = 'Combobox';

@@ -1,5 +1,29 @@
 # @polaris/ui
 
+## 0.8.0-rc.9
+
+### Patch Changes
+
+- 폼 컴포넌트 묶음 — 컨슈머 webhook 구독 폼 케이스 보고에서 도출된 6가지 정형 패턴 정리 + 부족 컴포넌트 보강. **BREAKING 없음** — 모두 additive.
+
+  **신규 컴포넌트:**
+  - `<SelectField>` — `<Select>` + label + helperText + error wrapper
+  - `<CheckboxGroup>` + `<CheckboxGroupItem>` — fieldset + legend + 반응형 그리드
+  - `<RadioGroup>` + `<RadioGroupItem>` — `@radix-ui/react-radio-group` 위 + variant `default`/`ai`
+  - `<FieldGroup>` — visual grouping container (plain / boxed)
+
+  **props 추가:**
+  - `<Combobox>` — `label` / `helperText` / `error` / `containerClassName`
+  - `<DatePicker>` / `<DateRangePicker>` — `label` / `helperText` / `error` / `containerClassName` / `id`
+
+  **내부 헬퍼:**
+  - `packages/ui/src/lib/field-shell.tsx` — `<FieldShell>` + `fieldA11y` (internal only, export X)
+
+  **의존성:**
+  - `@radix-ui/react-radio-group@^1.3.8` 신규
+
+  **테스트:** 303/303 ✓ (+24)
+
 ## 0.7.7
 
 ### Patch Changes

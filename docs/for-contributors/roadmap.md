@@ -356,7 +356,9 @@ v0.6/rc.0/rc.1/v0.7 거치며 누적된 deprecated alias + naming 불일치 + to
 - **NumberInput** — 한국어 IME 우회. 통화/단가 전용.
 - **Slider / Range** — 가격/좌석 수 필터.
 - **CodeBlock** — JSON debug view, RPC 결과.
-- **CheckboxGroup / RadioGroup** — 그룹 ARIA + horizontal/vertical layout.
+- ~~**CheckboxGroup / RadioGroup** — 그룹 ARIA + horizontal/vertical layout.~~ ✅ v0.8.0-rc.9 완료 (fieldset+legend+grid).
+- **FieldGroup boxed surface 디자인팀 사인오프** — v0.8.0-rc.9 에서 `bg-fill-neutral` + `rounded-polaris-md` + `p-polaris-md` 권장값으로 ship. 실 케이스에서 padding/radius/bg 조정 여지 명시. 디자인팀 v0.9 follow-up 묶음에 등재 예정.
+- **`<SelectField>` 신규 prefab** — Select + label wrapper. v0.8.0-rc.9 완료. 향후 react-hook-form `<FormField>` 와의 자동 페어링 (FormField 가 label/error 를 자동 흘리는 경로) 검토.
 
 ---
 

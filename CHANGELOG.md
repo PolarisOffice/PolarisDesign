@@ -12,6 +12,44 @@
 
 ---
 
+## [0.8.0-rc.9] — 2026-06-05
+
+실전 컨슈머 (webhook 구독 폼) 의 폼 구성 어려움을 보고 받아, 흩어져 있던 폼 라벨링/그룹핑 패턴을 **6가지 정형 패턴** 으로 정리하고 부족한 컴포넌트 3개를 추가. **rc.8 대비 BREAKING 변경 없음** — 모든 추가는 *opt-in additive*. 기존 사용처 코드 변경 0.
+
+### 신규 — 폼 컴포넌트 묶음 (additive)
+
+- **`<SelectField>`** — `<Select>` + `<SelectTrigger>` + `<SelectContent>` 의 *above-label* wrapper. `label` / `helperText` / `error` / `placeholder` 를 한 줄 props 로 받는 prefab. 90% 케이스를 1 컴포넌트로 줄임. 복잡 케이스 (그룹, separator, custom trigger) 는 기존 sub-components 유지.
+- **`<Combobox label>` / `<DatePicker label>` / `<DateRangePicker label>`** — 모두 `label` / `helperText` / `error` / `containerClassName` 추가. `<Input>` 과 동일한 above-label 패턴이 자동 적용. 에러 상태에서 border + aria-invalid + ErrorIcon-prefixed alert 자동 처리.
+- **`<CheckboxGroup>` + `<CheckboxGroupItem>`** — native `<fieldset>` + `<legend>` 기반 다중 체크박스 그룹. `cols={1|2|3|4}` 반응형 그리드, `value: string[]` / `onValueChange` 로 선택 누적 자동 관리. React Context (CheckboxGroupContext) 로 item↔group 좌표화. `<CheckboxGroupItem>` 을 `<CheckboxGroup>` 밖에서 사용하면 명확한 throw.
+- **`<RadioGroup>` + `<RadioGroupItem>`** — Radix `@radix-ui/react-radio-group` 위에 CheckboxGroup 과 동일한 fieldset+legend+grid 패턴. `variant: 'default' | 'ai'` 지원. RadioGroupItem 에 `helperText` 가능 — 옵션별 설명이 필요할 때 Select 대신 사용.
+- **`<FieldGroup>`** — 여러 폼 필드를 *시각적으로 하나의 단위* 로 묶는 컨테이너. `variant: 'plain' | 'boxed'` (boxed: `bg-fill-neutral` + radius + padding), `gap: 'xs'|'sm'|'md'|'lg'`. CheckboxGroup/RadioGroup 의 *semantic* group 과 구분되는 *visual* group.
+
+### 신규 — 내부 헬퍼
+
+- **`packages/ui/src/lib/field-shell.tsx`** (internal) — `<FieldShell>` 컴포넌트 + `fieldA11y(id, hasError, hasMessage)` helper. label / helperText / error+ErrorIcon stack 표준화. SelectField / Combobox / DatePicker / DateRangePicker / DateTimeInput / TimeInput / FileInput 의 above-label 패턴이 모두 이 헬퍼를 거치도록 통일. 외부 export 안 함 (internal API).
+
+### 디자인 결정
+
+- **CheckboxGroup / RadioGroup 은 `<fieldset>` + `<legend>` 직접 렌더** — `<FieldShell>` 의 `<label htmlFor>` 패턴과 의미적으로 다름 (group label vs control label). a11y 우선 결정: screen reader가 "N개 묶인 그룹" 으로 인식하도록.
+- **FieldGroup 의 boxed surface 는 design team 사인오프 대기 중** — `bg-fill-neutral` + `rounded-polaris-md` + `p-polaris-md` 권장값으로 우선 ship. 실 케이스에서 조정 가능성 명시 (JSDoc + roadmap follow-up).
+- **opt-in label 패턴** — Select/Combobox/DatePicker 모두 `label` prop 이 없으면 기존 trigger-only 렌더로 fallback (FieldShell wrap 안 함). 기존 컨슈머 코드 변경 0.
+
+### docs
+
+- **`docs/for-consumers/component-use-cases/form-patterns.md` 신규** — 폼 구성 6가지 정형 패턴, 패턴 ↔ 컴포넌트 매핑 표, 안티 패턴, react-hook-form 통합, webhook 구독 폼 종합 예시. use-cases 인덱스에 등재.
+
+### 검증
+
+- `pnpm --filter @polaris/ui test` **303/303 ✓** (+24 신규 — CheckboxGroup 6 / RadioGroup 5 / FieldGroup 4 / SelectField 3 / Combobox label 3 / DatePicker label 3)
+- `pnpm --filter @polaris/ui typecheck` ✓
+- Codex review pending (rc.9 추가물 대상)
+
+### 의존성
+
+- `@radix-ui/react-radio-group@^1.3.8` 신규 (RadioGroup 용)
+
+---
+
 ## [0.8.0-rc.8] — 2026-05-11
 
 실전 컨슈머의 RSC 친화 요구 6건을 한 사이클에 묶어 처리. **rc.7 대비 BREAKING 변경 없음** — 모든 추가는 *opt-in additive*. controlled API는 그대로 유지되어 client SPA 컨슈머는 코드 변경 0.

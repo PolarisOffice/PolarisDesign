@@ -1,7 +1,8 @@
-import { forwardRef } from 'react';
+import { forwardRef, useId, type ReactNode } from 'react';
 import * as SelectPrimitive from '@radix-ui/react-select';
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from '../icons';
 import { cn } from '../lib/cn';
+import { FieldShell, fieldA11y } from '../lib/field-shell';
 
 export const Select = SelectPrimitive.Root;
 export const SelectGroup = SelectPrimitive.Group;
@@ -109,3 +110,104 @@ export const SelectSeparator = forwardRef<
   />
 ));
 SelectSeparator.displayName = 'SelectSeparator';
+
+/* ================================================================== *
+ * SelectField — high-level wrapper with above-label + helperText + error
+ * (v0.8.0-rc.9 NEW)
+ * ================================================================== *
+ *
+ * Most consumers wrap `<Select>` in a label + helperText scaffold by
+ * hand. `<SelectField>` bundles that pattern so the common case is one
+ * component: `<SelectField label helperText error value onValueChange>…</SelectField>`.
+ *
+ * For complex compositions (groups / separators / custom trigger /
+ * portal target) use the primitives directly (`<Select>` + `<SelectTrigger>` etc.).
+ *
+ * Layout matches `<DateTimeInput>` / `<TimeInput>` / `<FileInput>` —
+ * above-label + helperText below + ErrorIcon-prefixed error message.
+ *
+ * @example
+ * ```tsx
+ * <SelectField
+ *   label="전달 대상"
+ *   helperText="Microsoft Teams를 선택하면 …"
+ *   value={target}
+ *   onValueChange={setTarget}
+ *   placeholder="선택하세요"
+ * >
+ *   <SelectItem value="webhook">웹훅 (Generic JSON)</SelectItem>
+ *   <SelectItem value="teams">Microsoft Teams</SelectItem>
+ * </SelectField>
+ * ```
+ */
+export interface SelectFieldProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof SelectPrimitive.Root>, 'children'> {
+  /** Above-label rendered over the trigger. */
+  label?: ReactNode;
+  /** Helper text below the trigger (between trigger and error). */
+  helperText?: ReactNode;
+  /** Error message — flips border to state-error and renders ⚠ icon below. */
+  error?: ReactNode;
+  /** Placeholder shown in the trigger before a value is picked. */
+  placeholder?: ReactNode;
+  /** Class for the outer container. */
+  containerClassName?: string;
+  /** Class for the inner `<SelectTrigger>`. */
+  triggerClassName?: string;
+  /** Class for the inner `<SelectContent>`. */
+  contentClassName?: string;
+  /** Stable id for the trigger (so external `<label>` and a11y wire up). Auto-generated if omitted. */
+  id?: string;
+  /** Items + groups + separators — anything that can live inside `<SelectContent>`. */
+  children: ReactNode;
+}
+
+export const SelectField = forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Trigger>,
+  SelectFieldProps
+>(
+  (
+    {
+      label,
+      helperText,
+      error,
+      placeholder,
+      containerClassName,
+      triggerClassName,
+      contentClassName,
+      id: providedId,
+      children,
+      ...selectProps
+    },
+    ref,
+  ) => {
+    const generatedId = useId();
+    const id = providedId ?? generatedId;
+    const isError = Boolean(error);
+    const hasMessage = Boolean(error || helperText);
+    return (
+      <FieldShell
+        label={label}
+        helperText={helperText}
+        error={error}
+        containerClassName={containerClassName}
+        id={id}
+      >
+        <Select {...selectProps}>
+          <SelectTrigger
+            ref={ref}
+            {...fieldA11y(id, isError, hasMessage)}
+            className={cn(
+              isError && 'border-state-error focus-visible:border-state-error focus-visible:ring-state-error',
+              triggerClassName,
+            )}
+          >
+            <SelectValue placeholder={placeholder} />
+          </SelectTrigger>
+          <SelectContent className={contentClassName}>{children}</SelectContent>
+        </Select>
+      </FieldShell>
+    );
+  },
+);
+SelectField.displayName = 'SelectField';

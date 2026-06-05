@@ -52,3 +52,7 @@ export * from './PageHeader';
 export * from './CircularProgress';
 export * from './Accordion';
 export * from './Combobox';
+// Tier 3.9 — form field groups + container (v0.8.0-rc.9)
+export * from './CheckboxGroup';
+export * from './RadioGroup';
+export * from './FieldGroup';

@@ -50,7 +50,7 @@
 |---|---|---|---|
 | **DropdownMenu** | v0.4 | v0.7.6 `DropdownMenuFormItem` (server action) 🆕 · v0.7.7 `icon` slot 🛠 · v0.8.0 `bg-surface-border` → `bg-line-neutral` 🎨 | items, icon, asChild |
 | **Tooltip** | v0.4 | (안정) | content, side, delayDuration |
-| **Select** | v0.4 | v0.8.0 separator color 토큰 정합 🎨 | options, value, onValueChange |
+| **Select** | v0.4 | v0.8.0 separator color 토큰 정합 🎨 · **v0.8.0-rc.9 `<SelectField>` wrapper 🆕** (label/helperText/error prefab) | options, value, onValueChange · SelectField: label, helperText, error, placeholder |
 | **Sidebar** | v0.4 | v0.7.0 active 상태 brand-bg + accent-brand-normal 🎨 | Header / Body / Footer slot |
 | **Navbar** | v0.4 | v0.7.7 `<NavbarItem>` 신규 🆕 (active / asChild / icon / href) | Brand / Nav / Actions slot |
 | **NavbarItem** | v0.7.7 🆕 | active 상태 brand 틴트 + Sidebar 패턴 미러링 | active, asChild, icon, href |
@@ -60,7 +60,9 @@
 
 | Component | Added | 주요 진화 | Current API |
 |---|---|---|---|
-| **Checkbox** | v0.4 | v0.7.6 `helperText`/`error` 🛠 · **v0.8.0 `hint` → `helperText` 💥** · **v0.8.0 `variant="ai"` 🆕 (NOVA Purple)** | `variant="default" \| "ai"`, `helperText`, `error` |
+| **Checkbox** | v0.4 | v0.7.6 `helperText`/`error` 🛠 · **v0.8.0 `hint` → `helperText` 💥** · **v0.8.0 `variant="ai"` 🆕 (NOVA Purple)** · **v0.8.0-rc.9 `<CheckboxGroup>` + `<CheckboxGroupItem>` 🆕** (fieldset+legend+grid) | `variant="default" \| "ai"`, `helperText`, `error` · CheckboxGroup: label, value, onValueChange, cols |
+| **RadioGroup** | v0.8.0-rc.9 🆕 | Radix `@radix-ui/react-radio-group` 위 + fieldset+legend+grid + variant `default`/`ai` | label, helperText, error, value, onValueChange, cols, variant |
+| **FieldGroup** | v0.8.0-rc.9 🆕 | visual grouping container (CheckboxGroup/RadioGroup 의 semantic group 과 구분) | label, description, variant `plain`/`boxed`, gap |
 | **Switch** | v0.4 | v0.7.6 `label` / `helperText` / `error` (Checkbox 일관성) 🛠 · v0.8.0 `bg-surface-border-strong` → `bg-line-normal` 🎨 · **v0.8.0 `hint` → `helperText` 💥** | label, helperText, error |
 | **Skeleton** | v0.4 | v0.7.6 `shape="rect/text/circle/bare"` + `lines={N}` 🛠 | shape, lines |
 | **Alert** | v0.4 | v0.7.3 토큰 정합 (state-*) · v0.7.6 `dismissible` + `action` slot 🛠 · ⚠️ 디자인팀 유지/제거 결정 대기 | variant, dismissible, action |
@@ -84,8 +86,8 @@
 |---|---|---|---|
 | **Popover** | v0.4 | (안정) | open, onOpenChange |
 | **Calendar** | v0.4 | 🧪 v0.8.0 focus ring 통일 🎨 | mode, selected, onSelect |
-| **DatePicker** | v0.4 | 🧪 v0.7.6 `name`/`valueFormat`/`required`/`form` 🛠 (server-action friendly) · v0.8.0 jsdoc 정정 + `disabled` mirror 🛠 | name, valueFormat, required, disabled |
-| **DateRangePicker** | v0.4 | 🧪 (안정) | range, onRangeChange |
+| **DatePicker** | v0.4 | 🧪 v0.7.6 `name`/`valueFormat`/`required`/`form` 🛠 (server-action friendly) · v0.8.0 jsdoc 정정 + `disabled` mirror 🛠 · **v0.8.0-rc.9 `label`/`helperText`/`error`/`containerClassName`/`id` 🛠** | name, valueFormat, required, disabled, label, helperText, error |
+| **DateRangePicker** | v0.4 | 🧪 v0.8.0-rc.9 `label`/`helperText`/`error`/`containerClassName`/`id` 🛠 | range, onRangeChange, label, helperText, error |
 | **Command** | v0.4 | 🧪 v0.8.0 separator color 토큰 정합 🎨 | items |
 
 ## Tier 3.5 — feedback / utility (v0.7.5)
@@ -125,7 +127,7 @@
 | **PageHeader** | v0.7.7 🆕 | title + description + breadcrumb + eyebrow + actions | as, divider |
 | **SectionHeader** | v0.7.7 🆕 | h2 (default) / h3 — PageHeader card-외부 sibling | as |
 | **Accordion** | v0.7.7 🆕 | group disclosure · Radix-backed · `type="single\|multiple"` | type, collapsible |
-| **Combobox** | v0.7.7 🆕 | cmdk-backed searchable Select · `multiple` 모드 | options, value, multiple |
+| **Combobox** | v0.7.7 🆕 | cmdk-backed searchable Select · `multiple` 모드 · **v0.8.0-rc.9 `label`/`helperText`/`error`/`containerClassName` 🛠** | options, value, multiple, label, helperText, error |
 | **AvatarGroup** | v0.7.6 🆕 | overlap + `+N` 인디케이터 — size 자동 propagate | max, size |
 
 ## Subpath / 부속

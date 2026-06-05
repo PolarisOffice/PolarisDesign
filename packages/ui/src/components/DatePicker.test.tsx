@@ -59,4 +59,26 @@ describe('DatePicker', () => {
     const hidden = container.querySelector('input[type="hidden"]');
     expect(hidden).toHaveAttribute('disabled');
   });
+
+  describe('label / helperText / error (v0.8.0-rc.9)', () => {
+    it('renders a label above the trigger', () => {
+      render(<DatePicker label="만료일" placeholder="선택" />);
+      expect(screen.getByText('만료일')).toBeInTheDocument();
+    });
+
+    it('renders helperText below the trigger', () => {
+      render(<DatePicker label="만료일" helperText="YYYY-MM-DD 형식" />);
+      expect(screen.getByText('YYYY-MM-DD 형식')).toBeInTheDocument();
+      expect(screen.queryByRole('alert')).toBeNull();
+    });
+
+    it('renders error message and sets aria-invalid', () => {
+      render(<DatePicker label="만료일" error="과거 날짜는 선택할 수 없습니다" />);
+      expect(screen.getByRole('alert')).toHaveTextContent('과거 날짜는 선택할 수 없습니다');
+      expect(screen.getByRole('button', { name: '날짜 선택' })).toHaveAttribute(
+        'aria-invalid',
+        'true',
+      );
+    });
+  });
 });

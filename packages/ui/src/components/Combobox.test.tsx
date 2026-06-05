@@ -79,6 +79,26 @@ describe('Combobox — single', () => {
   });
 });
 
+describe('Combobox — label / helperText / error (v0.8.0-rc.9)', () => {
+  it('renders a label above the trigger wired via htmlFor', () => {
+    render(<Combobox options={CITIES} label="전달 대상" placeholder="선택" />);
+    expect(screen.getByText('전달 대상')).toBeInTheDocument();
+    expect(screen.getByRole('combobox')).toBeInTheDocument();
+  });
+
+  it('renders helperText below the trigger', () => {
+    render(<Combobox options={CITIES} label="대상" helperText="여러 도시 선택 가능" placeholder="x" />);
+    expect(screen.getByText('여러 도시 선택 가능')).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+
+  it('shows error message + sets aria-invalid on the trigger', () => {
+    render(<Combobox options={CITIES} label="대상" error="최소 1개 선택" placeholder="x" />);
+    expect(screen.getByRole('alert')).toHaveTextContent('최소 1개 선택');
+    expect(screen.getByRole('combobox')).toHaveAttribute('aria-invalid', 'true');
+  });
+});
+
 describe('Combobox — multiple', () => {
   it('renders selected count when multiple values', () => {
     render(<Combobox multiple options={CITIES} value={['seoul', 'busan']} placeholder="x" />);

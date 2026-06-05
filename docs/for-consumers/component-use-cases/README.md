@@ -11,6 +11,7 @@
 | 컴포넌트 | 가이드 | 핵심 결정 |
 |---|---|---|
 | `<Badge>` | [badge.md](badge.md) | tone × variant 매핑 + 도메인 상태 (active / 완료 / 거절 / 초안 등) ↔ Badge 조합 |
+| 폼 컴포넌트 묶음 | [form-patterns.md](form-patterns.md) | 6가지 폼 패턴 ↔ `<SelectField>` / `<CheckboxGroup>` / `<RadioGroup>` / `<FieldGroup>` 결정 가이드 (v0.8.0-rc.9 신규 컴포넌트 포함) |
 
 ### 토큰 namespace (예정 — KCAS 피드백 후속)
 
