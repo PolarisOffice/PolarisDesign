@@ -1,5 +1,27 @@
 # @polaris/ui
 
+## 0.8.0-rc.10
+
+### Patch Changes
+
+- 폼 컨트롤 시각 정합 + RSC 서버액션 친화. **BREAKING 없음** — 모두 opt-in additive.
+
+  **신규 props (additive):**
+  - `<Input>` / *(Textarea 기존 above-label 유지)* — `labelPlacement?: 'floating' | 'above'` (기본 `'floating'` BC)
+  - `<SelectTrigger>` / `<SelectField>` / `<Combobox>` / `<DatePicker>` / `<DateRangePicker>` — `size?: 'default' | 'lg'` (기본 `'default'` BC, `'lg'` = 52px로 Input 매칭)
+  - `<CheckboxGroup>` — `defaultValue?: string[]` 비제어 모드 (RSC 서버액션 친화)
+
+  **신규 docs:**
+  - `docs/for-consumers/component-use-cases/form-patterns.md` — "RSC + 서버액션" 섹션 추가
+  - `docs/for-consumers/component-use-cases/variant-matrix.md` 신규
+  - `packages/ui/TOKENS.md` auto-gen (CSS 변수 / Tailwind / TS namespace 4컬럼 reference)
+
+  **빌드:**
+  - `scripts/build-tokens-reference.ts` 신규
+  - `pnpm verify` 에 `Verify TOKENS.md sync` 단계 추가
+
+  **테스트:** 319/319 ✓ (+16)
+
 ## 0.8.0-rc.9
 
 ### Patch Changes

@@ -24,7 +24,7 @@
 | `<NovaInput>` | Called when the user presses Enter or clicks the send button. |
 | `<DropdownMenu>` | Render the item with status-danger color (for delete / destructive actions). |
 | `<Tooltip>` | Convenience: standalone Tooltip with text content. |
-| `<Select>` | Above-label rendered over the trigger. |
+| `<Select>` | Trigger height. |
 | `<Sidebar>` | Collapse to icon-only mode (4rem wide). |
 | `<Navbar>` | Render the child element instead of `<div>`. |
 | `<PromptChip>` | Optional icon shown at the start (typically a lucide icon at h-4 w-4). |

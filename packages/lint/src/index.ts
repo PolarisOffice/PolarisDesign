@@ -15,7 +15,7 @@ const meta = {
   // ESLint Plugin spec의 meta.version — `pnpm version` 시점에
   // `scripts/sync-root-version.mjs`가 이 줄의 string literal을 자동
   // 교체합니다 (TS_TARGETS regex). 손으로 갱신하지 마세요.
-  version: '0.8.0-rc.9',
+  version: '0.8.0-rc.10',
 } as const;
 
 const rules = {

@@ -128,4 +128,38 @@ describe('Input', () => {
     rerender(<Input label="x" value={undefined} onChange={() => {}} clearable />);
     expect(screen.queryByRole('button', { name: '입력 지우기' })).toBeNull();
   });
+
+  describe('labelPlacement="above" (rc.10)', () => {
+    it('renders the label as a sibling above the input (FieldShell pattern)', () => {
+      render(<Input labelPlacement="above" label="구독 이름" placeholder="x" />);
+      const label = screen.getByText('구독 이름');
+      // Above-label uses FieldShell — no floating-position classes
+      expect(label.className).not.toContain('absolute');
+      expect(label.className).not.toContain('top-1/2');
+      // The input is wired via htmlFor/id
+      const input = screen.getByLabelText('구독 이름');
+      expect(input.tagName.toLowerCase()).toBe('input');
+    });
+
+    it('does not reserve pt-5/pb-1 padding in above mode (the input keeps its native baseline)', () => {
+      render(<Input labelPlacement="above" label="x" />);
+      const input = screen.getByLabelText('x');
+      expect(input.className).not.toMatch(/\bpt-5\b/);
+      expect(input.className).not.toMatch(/\bpb-1\b/);
+    });
+
+    it('falls back to floating mode when labelPlacement is omitted (BC)', () => {
+      render(<Input label="x" />);
+      const label = screen.getByText('x');
+      expect(label.className).toContain('absolute');
+    });
+
+    it('renders helperText + error via FieldShell in above mode', () => {
+      render(
+        <Input labelPlacement="above" label="x" error="필수 항목" />,
+      );
+      expect(screen.getByRole('alert')).toHaveTextContent('필수 항목');
+      expect(screen.getByLabelText('x')).toHaveAttribute('aria-invalid', 'true');
+    });
+  });
 });

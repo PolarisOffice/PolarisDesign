@@ -12,6 +12,7 @@ import {
 import { X } from 'lucide-react';
 import { ErrorIcon } from '../icons';
 import { cn } from '../lib/cn';
+import { FieldShell, fieldA11y } from '../lib/field-shell';
 
 export interface InputProps
   // `prefix` is a standard HTML attribute (`prefix="og: ..."`) typed as `string`;
@@ -28,6 +29,15 @@ export interface InputProps
    *  alone). Pass `null` / `undefined` to clear. */
   error?: string;
   containerClassName?: string;
+  /**
+   * Where the label sits relative to the input. `'floating'` (default,
+   * v0.7 spec) — the label animates inside the input box. `'above'`
+   * (v0.8.0-rc.10 NEW) — the label sits *above* the input, matching the
+   * `<SelectField>` / `<Combobox>` / `<DatePicker>` pattern. Use when an
+   * Input shares a row with one of those (otherwise vertical alignment
+   * breaks). Default stays `'floating'` to preserve BC.
+   */
+  labelPlacement?: 'floating' | 'above';
   /**
    * Content rendered inside the input on the LEFT (currency symbol,
    * unit prefix, leading icon). Wrapped in a non-interactive `<span>`
@@ -92,7 +102,7 @@ export interface InputProps
  * ```
  */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, containerClassName, label, helperText, error, id: providedId, onFocus, onBlur, onChange, value, defaultValue, placeholder, prefix, suffix, clearable, onClear, disabled, readOnly, ...props }, forwardedRef) => {
+  ({ className, containerClassName, label, helperText, error, labelPlacement = 'floating', id: providedId, onFocus, onBlur, onChange, value, defaultValue, placeholder, prefix, suffix, clearable, onClear, disabled, readOnly, ...props }, forwardedRef) => {
     const generatedId = useId();
     const id = providedId ?? generatedId;
     const messageId = error || helperText ? `${id}-msg` : undefined;
@@ -153,94 +163,112 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       el.focus();
     };
 
+    // Above-label mode (rc.10 NEW) — render label *above* the input via
+    // FieldShell to align with SelectField/Combobox/DatePicker on a
+    // shared row. The inner control is a plain input with no
+    // floating-label affordances (no `pt-5 pb-1` padding reservation,
+    // no animated floating label). prefix/suffix/clear behavior is
+    // unchanged. helperText/error stack moves to FieldShell.
+    const isAbove = labelPlacement === 'above';
+    const hasMessage = Boolean(error || helperText);
+
+    const inputEl = (
+      <div className="relative">
+        {label && !isAbove && (
+          <label
+            htmlFor={id}
+            className={cn(
+              'pointer-events-none absolute font-polaris transition-all duration-polaris-fast ease-polaris-out',
+              prefix ? 'left-12' : 'left-5',
+              labelFloating
+                ? 'top-2 text-polaris-helper text-label-assistive'
+                : 'top-1/2 -translate-y-1/2 text-polaris-body2 text-label-assistive'
+            )}
+          >
+            {label}
+          </label>
+        )}
+        {prefix && (
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 inline-flex items-center text-polaris-body2 text-label-alternative [&>svg]:h-4 [&>svg]:w-4"
+          >
+            {prefix}
+          </span>
+        )}
+        <input
+          ref={localRef}
+          {...(isAbove
+            ? fieldA11y(id, isError, hasMessage)
+            : { id, 'aria-invalid': isError || undefined, 'aria-describedby': messageId })}
+          placeholder={isAbove ? placeholder : labelFloating || !label ? placeholder : ''}
+          value={value}
+          defaultValue={defaultValue}
+          disabled={disabled}
+          readOnly={readOnly}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          onChange={handleChange}
+          className={cn(
+            // 52px height + 20px h-padding + sm radius (8) per spec.
+            // pt-5/pb-1 reserves space for the floating label — only
+            // needed in floating mode.
+            'h-[52px] w-full rounded-polaris-sm font-polaris text-polaris-body2',
+            label && !isAbove ? 'pt-5 pb-1' : '',
+            prefix ? 'pl-12' : 'pl-5',
+            showClear ? 'pr-11' : suffix ? 'pr-12' : 'pr-5',
+            'bg-background-base text-label-normal placeholder:text-label-assistive',
+            'border border-line-neutral',
+            'transition-colors duration-polaris-fast',
+            'focus-visible:outline-none focus-visible:border-accent-brand-normal',
+            'disabled:bg-background-disabled disabled:border-line-disabled disabled:text-label-disabled disabled:cursor-not-allowed',
+            isError && 'border-state-error focus-visible:border-state-error',
+            className
+          )}
+          {...props}
+        />
+        {suffix && (
+          <span
+            aria-hidden="true"
+            className={cn(
+              'pointer-events-none absolute top-1/2 -translate-y-1/2 inline-flex items-center text-polaris-body2 text-label-alternative [&>svg]:h-4 [&>svg]:w-4',
+              showClear ? 'right-11' : 'right-5'
+            )}
+          >
+            {suffix}
+          </span>
+        )}
+        {showClear && (
+          <button
+            type="button"
+            onClick={handleClear}
+            aria-label="입력 지우기"
+            tabIndex={-1}
+            className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex h-7 w-7 items-center justify-center rounded-polaris-sm text-label-alternative hover:bg-interaction-hover focus-visible:outline-none focus-visible:shadow-polaris-focus"
+          >
+            <X className="h-4 w-4" aria-hidden="true" />
+          </button>
+        )}
+      </div>
+    );
+
+    if (isAbove) {
+      return (
+        <FieldShell
+          id={id}
+          label={label}
+          helperText={helperText}
+          error={error}
+          containerClassName={containerClassName}
+        >
+          {inputEl}
+        </FieldShell>
+      );
+    }
+
     return (
       <div className={cn('flex flex-col gap-polaris-3xs', containerClassName)}>
-        <div className="relative">
-          {label && (
-            <label
-              htmlFor={id}
-              className={cn(
-                'pointer-events-none absolute font-polaris transition-all duration-polaris-fast ease-polaris-out',
-                // Adornments shift the label-anchor x to align with the input text.
-                prefix ? 'left-12' : 'left-5',
-                labelFloating
-                  ? 'top-2 text-polaris-helper text-label-assistive'
-                  : 'top-1/2 -translate-y-1/2 text-polaris-body2 text-label-assistive'
-              )}
-            >
-              {label}
-            </label>
-          )}
-          {prefix && (
-            <span
-              aria-hidden={
-                // Icons are usually decorative; strings (currency) might be
-                // semantically meaningful. Hide from AT only for icon nodes
-                // where the input's own label/placeholder carries the
-                // meaning. We default to `true`; consumers that need a
-                // semantic prefix can wrap in their own `<span>` / `<abbr>`.
-                'true'
-              }
-              className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 inline-flex items-center text-polaris-body2 text-label-alternative [&>svg]:h-4 [&>svg]:w-4"
-            >
-              {prefix}
-            </span>
-          )}
-          <input
-            id={id}
-            ref={localRef}
-            aria-invalid={isError || undefined}
-            aria-describedby={messageId}
-            placeholder={labelFloating || !label ? placeholder : ''}
-            value={value}
-            defaultValue={defaultValue}
-            disabled={disabled}
-            readOnly={readOnly}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-            onChange={handleChange}
-            className={cn(
-              // 52px height + 20px h-padding + sm radius (8) per spec.
-              // pt-5/pb-1 when label is floating reserves space for it.
-              'h-[52px] w-full rounded-polaris-sm font-polaris text-polaris-body2',
-              label ? 'pt-5 pb-1' : '',
-              // Horizontal padding adjusts for prefix/suffix/clear adornments.
-              prefix ? 'pl-12' : 'pl-5',
-              showClear ? 'pr-11' : suffix ? 'pr-12' : 'pr-5',
-              'bg-background-base text-label-normal placeholder:text-label-assistive',
-              'border border-line-neutral',
-              'transition-colors duration-polaris-fast',
-              'focus-visible:outline-none focus-visible:border-accent-brand-normal',
-              'disabled:bg-background-disabled disabled:border-line-disabled disabled:text-label-disabled disabled:cursor-not-allowed',
-              isError && 'border-state-error focus-visible:border-state-error',
-              className
-            )}
-            {...props}
-          />
-          {/* Suffix sits to the LEFT of the clear button when both shown. */}
-          {suffix && (
-            <span
-              aria-hidden="true"
-              className={cn(
-                'pointer-events-none absolute top-1/2 -translate-y-1/2 inline-flex items-center text-polaris-body2 text-label-alternative [&>svg]:h-4 [&>svg]:w-4',
-                showClear ? 'right-11' : 'right-5'
-              )}
-            >
-              {suffix}
-            </span>
-          )}
-          {showClear && (
-            <button
-              type="button"
-              onClick={handleClear}
-              aria-label="입력 지우기"
-              tabIndex={-1}
-              className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex h-7 w-7 items-center justify-center rounded-polaris-sm text-label-alternative hover:bg-interaction-hover focus-visible:outline-none focus-visible:shadow-polaris-focus"
-            >
-              <X className="h-4 w-4" aria-hidden="true" />
-            </button>
-          )}
-        </div>
+        {inputEl}
         {error ? (
           <p
             id={messageId}

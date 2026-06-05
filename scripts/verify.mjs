@@ -57,7 +57,7 @@ function isDirty(file) {
   return spawnSync('git', ['diff', '--quiet', '--', file]).status !== 0;
 }
 
-const driftSkippable = ['packages/ui/src/styles/tokens.css', 'DESIGN.md'].filter(isDirty);
+const driftSkippable = ['packages/ui/src/styles/tokens.css', 'DESIGN.md', 'packages/ui/TOKENS.md'].filter(isDirty);
 if (driftSkippable.length > 0) {
   console.log(`(skipping sync drift checks for dirty files: ${driftSkippable.join(', ')} — CI's clean checkout will still catch drift)`);
 }
@@ -67,8 +67,9 @@ const driftStep = (label, file) => isDirty(file)
 
 const STEPS = [
   ['Build @polaris/ui',                ['pnpm', '--filter', '@polaris/ui', 'build']],
-  driftStep('Verify token sync',       'packages/ui/src/styles/tokens.css'),
-  driftStep('Verify DESIGN.md sync',   'DESIGN.md'),
+  driftStep('Verify token sync',          'packages/ui/src/styles/tokens.css'),
+  driftStep('Verify TOKENS.md sync',      'packages/ui/TOKENS.md'),
+  driftStep('Verify DESIGN.md sync',      'DESIGN.md'),
   ['Verify root version sync',         ['node', 'scripts/sync-root-version.mjs', '--check']],
   ['Build @polaris/lint',              ['pnpm', '--filter', '@polaris/lint', 'build']],
   // v0.8 release-gate: catch dead-class / dead-token usage in @polaris/ui

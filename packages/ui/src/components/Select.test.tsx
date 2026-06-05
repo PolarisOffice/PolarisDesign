@@ -74,4 +74,27 @@ describe('SelectField', () => {
       'true',
     );
   });
+
+  describe('size prop (rc.10)', () => {
+    it('default size renders 40px trigger (h-10)', () => {
+      render(
+        <SelectField label="대상" defaultValue="slack">
+          <SelectItem value="slack">Slack</SelectItem>
+        </SelectField>,
+      );
+      expect(screen.getByRole('combobox')).toHaveClass('h-10');
+    });
+
+    it('size="lg" renders 52px trigger matching Input height', () => {
+      render(
+        <SelectField label="대상" size="lg" defaultValue="slack">
+          <SelectItem value="slack">Slack</SelectItem>
+        </SelectField>,
+      );
+      const trigger = screen.getByRole('combobox');
+      // Tailwind arbitrary value class survives in DOM
+      expect(trigger.className).toContain('h-[52px]');
+      expect(trigger.className).not.toContain('h-10 ');
+    });
+  });
 });

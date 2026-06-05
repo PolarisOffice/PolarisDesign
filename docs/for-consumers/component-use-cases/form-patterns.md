@@ -423,6 +423,167 @@ export function WebhookSubscriptionForm() {
 
 ---
 
+## RSC + 서버액션 (`<form action>`) — 비제어 폼 ★ v0.8.0-rc.10
+
+Next.js App Router 의 Server Component 에서 `<form action={serverAction}>` 패턴을 쓸 때, 폼 필드는 *비제어 (uncontrolled)* 로 두어야 client `useState` 없이 server payload 가 그대로 전달됩니다. 컨슈머 피드백에서 자주 묻는 "어떤 컴포넌트가 RSC 친화적인가" 매트릭스:
+
+### 컴포넌트별 RSC 비제어 지원
+
+| 컴포넌트 | `name` | `defaultValue` | RSC 비제어 작동 | 비고 |
+|---|---|---|---|---|
+| `<Input>` | ✓ native | ✓ native | ✅ | native input 그대로. `labelPlacement="above"` 권장 (Select 와 행 정렬) |
+| `<Textarea>` | ✓ native | ✓ native | ✅ | native textarea 그대로 |
+| `<Select>` / `<SelectField>` | ✓ Radix bubble | ✓ Radix bubble | ✅ | Radix가 hidden `<select>` 렌더 → FormData 정상 |
+| `<Checkbox>` | ✓ Radix bubble | ✓ `defaultChecked` | ✅ | `<form>` 안에 있을 때 hidden input 렌더 |
+| `<Switch>` | ✓ Radix bubble | ✓ `defaultChecked` | ✅ | Checkbox 와 동일 |
+| `<RadioGroup>` | ✓ Radix bubble | ✓ `defaultValue` | ✅ | Radix가 알아서 처리 |
+| **`<CheckboxGroup>`** (rc.10) | ✓ | ✓ `defaultValue={string[]}` | ✅ | rc.10 에서 비제어 모드 추가 |
+| `<Combobox>` | ✗ cmdk + custom | — | ❌ | client interactivity 필수 — `<input type="hidden">` 으로 우회 (예시 ↓) |
+| `<DatePicker>` / `<DateRangePicker>` | ✓ (별도 hidden input) | — (controlled 필요) | △ | `name` 만 forward — 값은 controlled state로. 또는 `defaultValue` + `useState` 의 client island 패턴 |
+| `<FileInput>` | ✓ native | ✗ | ✅ (single submit) | native file picker |
+
+### 종합 예시 — RSC server-action 폼
+
+```tsx
+// app/webhooks/new/page.tsx — Server Component
+import {
+  Input,
+  SelectField,
+  SelectItem,
+  Checkbox,
+  CheckboxGroup,
+  CheckboxGroupItem,
+  RadioGroup,
+  RadioGroupItem,
+  FieldGroup,
+  Button,
+} from '@polaris/ui';
+
+async function createWebhook(formData: FormData) {
+  'use server';
+  const name = formData.get('name');
+  const target = formData.get('target');           // SelectField
+  const active = formData.get('active') === 'on';  // Checkbox
+  const events = formData.getAll('events');        // CheckboxGroup (multi!)
+  const frequency = formData.get('frequency');     // RadioGroup
+  await db.webhooks.create({ name, target, active, events, frequency });
+}
+
+export default function NewWebhookPage() {
+  return (
+    <form action={createWebhook}>
+      <FieldGroup label="기본 정보">
+        <Input
+          name="name"                         // ← server action에 'name' 키로 도달
+          labelPlacement="above"
+          label="구독 이름"
+          required
+        />
+        <SelectField
+          name="target"                       // ← Radix bubble select 통해 'target' 키로 도달
+          defaultValue="slack"
+          size="lg"                           // ← Input 과 행 정렬 (52px)
+          label="전달 대상"
+        >
+          <SelectItem value="slack">Slack</SelectItem>
+          <SelectItem value="teams">Microsoft Teams</SelectItem>
+        </SelectField>
+      </FieldGroup>
+
+      <FieldGroup variant="boxed">
+        <Checkbox name="active" defaultChecked label="즉시 활성화" />
+      </FieldGroup>
+
+      <CheckboxGroup
+        name="events"                          // ← 모든 item이 같은 'events' 키
+        defaultValue={['view', 'download']}
+        label="구독 이벤트"
+      >
+        <CheckboxGroupItem value="view"     label="열람" />
+        <CheckboxGroupItem value="download" label="다운로드" />
+        <CheckboxGroupItem value="denied"   label="거부" />
+      </CheckboxGroup>
+
+      <RadioGroup name="frequency" defaultValue="instant" label="알림 빈도">
+        <RadioGroupItem value="instant" label="즉시" />
+        <RadioGroupItem value="hourly"  label="시간당 1회" />
+        <RadioGroupItem value="daily"   label="하루 1회" />
+      </RadioGroup>
+
+      <Button type="submit">저장</Button>
+    </form>
+  );
+}
+```
+
+위 코드에는 *어디에도 `useState`/`useEffect` 가 없습니다*. 그대로 Server Component 로 작동하며, 폼 제출 시 `createWebhook(formData)` 가 호출됩니다.
+
+### Combobox 우회 패턴
+
+`<Combobox>` 는 cmdk 기반 client interactivity 가 필수라 비제어 RSC 폼에서 직접 못 씁니다. 대신 client island 로 분리하거나, 사용자가 명시적으로 검색이 필요 없으면 `<SelectField>` 로 대체하세요.
+
+```tsx
+// app/_components/CityField.tsx — 'use client'
+'use client';
+import { Combobox } from '@polaris/ui';
+import { useState } from 'react';
+
+export function CityField({ defaultValue, name }: { defaultValue?: string; name: string }) {
+  const [city, setCity] = useState(defaultValue ?? null);
+  return (
+    <>
+      <Combobox options={CITIES} value={city} onChange={setCity} label="도시" />
+      <input type="hidden" name={name} value={city ?? ''} />
+    </>
+  );
+}
+
+// page.tsx (Server Component) 에서:
+// <CityField name="city" defaultValue="seoul" />
+```
+
+### DatePicker — name forward + controlled island
+
+DatePicker 는 `name` 을 받아 hidden input 으로 forward 하지만, 값 자체는 `value`/`onChange` controlled 가 필요합니다. RSC 친화적으로 쓰려면 client island 로 감싸세요:
+
+```tsx
+// app/_components/ExpiryField.tsx — 'use client'
+'use client';
+import { DatePicker } from '@polaris/ui';
+import { useState } from 'react';
+
+export function ExpiryField({ name, defaultValue }: { name: string; defaultValue?: Date }) {
+  const [date, setDate] = useState<Date | undefined>(defaultValue);
+  return <DatePicker name={name} value={date} onChange={setDate} label="만료일" />;
+}
+```
+
+### Server-side validation 패턴
+
+`required` / `type="email"` / `pattern` 같은 native HTML 제약은 client 측에서 잡히고, server action 안에서는 추가 검증을 *반드시* 해야 합니다:
+
+```tsx
+async function createWebhook(formData: FormData) {
+  'use server';
+  const schema = z.object({
+    name: z.string().min(3),
+    events: z.array(z.string()).min(1),
+    frequency: z.enum(['instant', 'hourly', 'daily']),
+  });
+  const parsed = schema.safeParse({
+    name: formData.get('name'),
+    events: formData.getAll('events'),
+    frequency: formData.get('frequency'),
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.flatten() };
+  }
+  await db.webhooks.create(parsed.data);
+}
+```
+
+---
+
 ## react-hook-form 통합
 
 위 컴포넌트들은 모두 `@polaris/ui/form` subpath 의 `<FormField>` 와 페어로 동작합니다:

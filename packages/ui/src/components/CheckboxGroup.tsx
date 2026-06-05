@@ -1,4 +1,4 @@
-import { forwardRef, useId, type ReactNode } from 'react';
+import { forwardRef, useId, useState, type ReactNode } from 'react';
 import { Checkbox } from './Checkbox';
 import { ErrorIcon } from '../icons';
 import { cn } from '../lib/cn';
@@ -61,12 +61,25 @@ export interface CheckboxGroupProps
   helperText?: ReactNode;
   /** Error message — same ErrorIcon-prefix layout as form fields. */
   error?: ReactNode;
-  /** Form name shared by all items (each item's input gets `name={...}`). */
+  /**
+   * Form name shared by all items (each item's input gets `name={...}`).
+   * When `name` is set without `value`, the group switches to *uncontrolled*
+   * mode: state is kept internally, native checkbox inputs are submitted
+   * with the form (RSC server-action friendly). See `defaultValue`.
+   */
   name?: string;
-  /** Selected values. Pair with `onValueChange`. */
+  /** Selected values. Pair with `onValueChange` for controlled mode. */
   value?: ReadonlyArray<string>;
   /** Fires with the new selection array (immutable). */
   onValueChange?: (next: string[]) => void;
+  /**
+   * Initial selection for *uncontrolled* mode (rc.10 NEW). Use with
+   * `name` to ship the values in a `<form action>` payload without a
+   * client `useState`. The group keeps its own internal state from
+   * here; `onValueChange` (if provided) still fires for analytics. If
+   * `value` is also set, controlled mode wins.
+   */
+  defaultValue?: ReadonlyArray<string>;
   /** Grid columns at md+. Default: 4. Mobile collapses to 1, sm to 2. */
   cols?: 1 | 2 | 3 | 4;
   /** Class for the outer fieldset container. */
@@ -96,7 +109,8 @@ export const CheckboxGroup = forwardRef<HTMLFieldSetElement, CheckboxGroupProps>
       helperText,
       error,
       name,
-      value = [],
+      value,
+      defaultValue,
       onValueChange,
       cols = 4,
       containerClassName,
@@ -111,16 +125,27 @@ export const CheckboxGroup = forwardRef<HTMLFieldSetElement, CheckboxGroupProps>
     const messageId = error || helperText ? `${id}-msg` : undefined;
     const isError = Boolean(error);
 
+    // Controlled vs uncontrolled (rc.10 NEW). When `value` is provided,
+    // the parent owns state. Otherwise (typical for RSC server-action
+    // forms), the group keeps state internally seeded from `defaultValue`.
+    // `onValueChange` fires either way for parents that just want to
+    // observe (analytics, conditional UI) without taking over state.
+    const isControlled = value !== undefined;
+    const [internalValue, setInternalValue] = useState<ReadonlyArray<string>>(
+      defaultValue ?? [],
+    );
+    const currentValue = isControlled ? value : internalValue;
+
     const onItemToggle = (itemValue: string, next: boolean) => {
-      if (!onValueChange) return;
-      const current = [...value];
+      const current = [...currentValue];
       if (next) {
         if (!current.includes(itemValue)) current.push(itemValue);
       } else {
         const idx = current.indexOf(itemValue);
         if (idx >= 0) current.splice(idx, 1);
       }
-      onValueChange(current);
+      if (!isControlled) setInternalValue(current);
+      onValueChange?.(current);
     };
 
     return (
@@ -140,7 +165,7 @@ export const CheckboxGroup = forwardRef<HTMLFieldSetElement, CheckboxGroupProps>
             {label}
           </legend>
         )}
-        <CheckboxGroupContext.Provider value={{ name, value, onItemToggle, hasError: isError }}>
+        <CheckboxGroupContext.Provider value={{ name, value: currentValue, onItemToggle, hasError: isError }}>
           <div className={cn('grid gap-polaris-2xs', COLS_CLASS[cols], gridClassName)}>
             {children}
           </div>

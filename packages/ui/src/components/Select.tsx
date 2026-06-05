@@ -8,15 +8,35 @@ export const Select = SelectPrimitive.Root;
 export const SelectGroup = SelectPrimitive.Group;
 export const SelectValue = SelectPrimitive.Value;
 
+export type SelectTriggerSize = 'default' | 'lg';
+
+export interface SelectTriggerProps
+  extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger> {
+  /**
+   * Trigger height. `'default'` (40px, v0.7 spec) is the historical
+   * value. `'lg'` (52px, v0.8.0-rc.10 NEW) matches `<Input>` so a
+   * Select can share a row with an Input without 12px misalignment.
+   * Default `'default'` preserves BC.
+   */
+  size?: SelectTriggerSize;
+}
+
 export const SelectTrigger = forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
+  SelectTriggerProps
+>(({ className, children, size = 'default', ...props }, ref) => (
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      'inline-flex h-10 w-full items-center justify-between gap-2 rounded-polaris-md',
-      'border border-line-normal bg-background-base px-3 py-2',
+      'inline-flex w-full items-center justify-between gap-2 rounded-polaris-md',
+      // Size axis — added in rc.10 to fix Input-vs-Select row mismatch.
+      // `lg` swaps to 52px and the `polaris-sm` radius (8px) so trigger
+      // matches the Input's box; default keeps the 40px / `polaris-md`
+      // (12px) the v0.7 spec defined.
+      size === 'lg'
+        ? 'h-[52px] rounded-polaris-sm px-5'
+        : 'h-10 px-3 py-2',
+      'border border-line-normal bg-background-base',
       'text-polaris-body2 font-polaris text-label-normal whitespace-nowrap',
       'data-[placeholder]:text-label-alternative',
       '[&>span]:truncate [&>span]:block [&>span]:min-w-0',
@@ -158,6 +178,12 @@ export interface SelectFieldProps
   contentClassName?: string;
   /** Stable id for the trigger (so external `<label>` and a11y wire up). Auto-generated if omitted. */
   id?: string;
+  /**
+   * Trigger height. `'default'` (40px) is the v0.7 spec. `'lg'` (52px,
+   * rc.10 NEW) matches `<Input labelPlacement="above">` so the two can
+   * share a row without alignment drift. Default `'default'` for BC.
+   */
+  size?: SelectTriggerSize;
   /** Items + groups + separators — anything that can live inside `<SelectContent>`. */
   children: ReactNode;
 }
@@ -176,6 +202,7 @@ export const SelectField = forwardRef<
       triggerClassName,
       contentClassName,
       id: providedId,
+      size = 'default',
       children,
       ...selectProps
     },
@@ -196,6 +223,7 @@ export const SelectField = forwardRef<
         <Select {...selectProps}>
           <SelectTrigger
             ref={ref}
+            size={size}
             {...fieldA11y(id, isError, hasMessage)}
             className={cn(
               isError && 'border-state-error focus-visible:border-state-error focus-visible:ring-state-error',

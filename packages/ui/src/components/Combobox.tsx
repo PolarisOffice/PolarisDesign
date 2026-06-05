@@ -103,6 +103,13 @@ export type ComboboxProps<V extends string = string> = (SingleProps<V> | MultiPr
   error?: ReactNode;
   /** Class for the outer container (the FieldShell wrapper). */
   containerClassName?: string;
+  /**
+   * Trigger height. `'default'` (40px) is the v0.7 spec. `'lg'` (52px,
+   * rc.10 NEW) matches `<Input labelPlacement="above">` so a Combobox
+   * can share a row with an Input without 12px drift. Default
+   * `'default'` for BC.
+   */
+  size?: 'default' | 'lg';
 };
 
 export function Combobox<V extends string = string>(props: ComboboxProps<V>) {
@@ -121,6 +128,7 @@ export function Combobox<V extends string = string>(props: ComboboxProps<V>) {
     helperText,
     error,
     containerClassName,
+    size = 'default',
   } = props;
   const isError = Boolean(error);
   const hasMessage = Boolean(error || helperText);
@@ -215,17 +223,23 @@ export function Combobox<V extends string = string>(props: ComboboxProps<V>) {
             aria-label={ariaLabel}
             disabled={disabled}
             className={cn(
-              'inline-flex h-10 w-full items-center gap-2 rounded-polaris-md',
-              'border bg-background-base py-2',
+              'inline-flex w-full items-center gap-2',
+              // Size axis — rc.10. `lg` matches Input (52 / sm radius);
+              // default matches SelectTrigger (40 / md radius).
+              size === 'lg'
+                ? 'h-[52px] rounded-polaris-sm py-2'
+                : 'h-10 rounded-polaris-md py-2',
+              'border bg-background-base',
               isError ? 'border-state-error' : 'border-line-normal',
               'text-polaris-body2 font-polaris text-label-normal whitespace-nowrap',
               'focus-visible:outline-none focus-visible:shadow-polaris-focus',
               isError ? 'focus-visible:border-state-error' : 'focus-visible:border-accent-brand-normal',
               'disabled:cursor-not-allowed disabled:opacity-50',
               // Right-padding makes room for the chevron + (optional)
-              // sibling clear button outside the trigger.
-              'pl-3',
-              showClear ? 'pr-16' : 'pr-3',
+              // sibling clear button outside the trigger. `lg` bumps the
+              // left padding to 20px to match Input.
+              size === 'lg' ? 'pl-5' : 'pl-3',
+              showClear ? 'pr-16' : size === 'lg' ? 'pr-5' : 'pr-3',
               className
             )}
           >

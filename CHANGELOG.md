@@ -12,6 +12,39 @@
 
 ---
 
+## [0.8.0-rc.10] — 2026-06-05
+
+실전 컨슈머 (DocSend-style RSC 폼) 가 rc.9 사용 중 발견한 5가지 비대칭을 한 사이클에 정리. **rc.9 대비 BREAKING 없음** — 모두 *opt-in additive*. 기존 컨슈머 코드 변경 0.
+
+### 폼 컨트롤 시각 정합 (consumer P1)
+
+- **`<Input labelPlacement="above">` 신규** — `'floating'` (기본, BC) vs `'above'`. `'above'` 모드는 `FieldShell` 경로로 렌더되어 `<SelectField>` / `<Combobox>` / `<DatePicker>` 와 동일한 라벨 패턴이 됩니다. Input 과 Select 가 같은 행에서 세로 정렬되지 않던 문제 해결.
+- **`size?: 'default' | 'lg'` 신규** — `<SelectTrigger>` / `<SelectField>` / `<Combobox>` / `<DatePicker>` / `<DateRangePicker>` 5개에 size 축 추가. `'default'` (40px, v0.7 spec) 가 기본 (BC), `'lg'` (52px) 는 Input 과 매칭. 같은 행에 `<Input labelPlacement="above">` + `<SelectField size="lg">` 두면 정확히 픽셀 정렬됨.
+
+### RSC 서버액션 폼 (consumer P2)
+
+- **`<CheckboxGroup>` 비제어 모드** — 신규 `defaultValue?: string[]` + 기존 `name` 을 함께 쓰면 client `useState` 없이 작동. 내부 state 로 토글 관리, 각 item 의 Radix bubble input 이 form payload 에 자동 합류. `onValueChange` 가 있으면 observer 로 호출 (state 점유 X). controlled 모드 (`value` 제공) 는 기존대로 우선.
+- **`docs/for-consumers/component-use-cases/form-patterns.md` "RSC + 서버액션" 섹션 추가** — 컴포넌트별 `name` / `defaultValue` / RSC 작동 여부 매트릭스. `<form action={serverAction}>` 종합 예시, `<Combobox>` client island 우회 패턴, `<DatePicker>` controlled island 패턴, server-side validation (zod) 패턴.
+
+### 발견성 / 일관성 (consumer P3 + P4 + P5)
+
+- **`docs/for-consumers/component-use-cases/variant-matrix.md` 신규** — Badge / Button / Stat / Alert / Toast / Checkbox / Switch / RadioGroup 의 variant 어휘 매트릭스. `Stat positive` ↔ `Badge success` 의 *의도적* 차이 설명, Button 에 `success/warning/info` 없는 이유, 마이그레이션 cheat sheet.
+- **`packages/ui/TOKENS.md` auto-gen 신규** — `src/tokens/*.ts` 에서 생성되는 평면 레퍼런스. 컬러 16 그룹 + radius + shadow + font + spacing + motion + zIndex 의 각 토큰을 4컬럼 (CSS 변수 / Tailwind 클래스 / TS namespace / light·dark hex) 표로 정리. 컨슈머가 인라인 CSS / 사내 컴포넌트에서 변수명 찾으려고 `node_modules` grep 하던 케이스 해결. 빌드 파이프라인 + verify drift 체크 등재.
+
+### 디자인 결정
+
+- **labelPlacement 기본값은 `'floating'`** — Input 의 v0.7 spec 시각을 보존. Input + Select 행을 새로 짤 때만 `'above'` 명시. 마이그레이션 0건.
+- **size 기본값은 `'default'`** — Select 의 v0.7 spec 시각 보존. 같은 행에 Input 두는 신규 폼만 `'lg'` 명시.
+- **CheckboxGroup uncontrolled 가 `defaultValue` 받음** — RSC 의 `<form action>` 흐름에서 client state 없이 작동. `RadioGroup` 은 이미 Radix native 로 작동하므로 같은 API 형태로 노출.
+
+### 검증
+
+- `pnpm verify` **15/15 ✓** (Verify TOKENS.md sync 신규 추가)
+- `@polaris/ui` tests: **319/319** (+16 신규 — Input labelPlacement 4 / Select·Combobox·DatePicker size 6 / CheckboxGroup uncontrolled 5 + RSC FormData 1)
+- TOKENS.md 269 행, 16 컬러 그룹 + 6 스칼라 그룹 모두 출력 확인
+
+---
+
 ## [0.8.0-rc.9] — 2026-06-05
 
 실전 컨슈머 (webhook 구독 폼) 의 폼 구성 어려움을 보고 받아, 흩어져 있던 폼 라벨링/그룹핑 패턴을 **6가지 정형 패턴** 으로 정리하고 부족한 컴포넌트 3개를 추가. **rc.8 대비 BREAKING 변경 없음** — 모든 추가는 *opt-in additive*. 기존 사용처 코드 변경 0.

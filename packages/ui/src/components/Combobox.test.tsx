@@ -97,6 +97,20 @@ describe('Combobox — label / helperText / error (v0.8.0-rc.9)', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('최소 1개 선택');
     expect(screen.getByRole('combobox')).toHaveAttribute('aria-invalid', 'true');
   });
+
+  describe('size prop (rc.10)', () => {
+    it('default size renders 40px trigger', () => {
+      render(<Combobox options={CITIES} placeholder="x" />);
+      expect(screen.getByRole('combobox')).toHaveClass('h-10');
+    });
+
+    it('size="lg" renders 52px trigger', () => {
+      render(<Combobox options={CITIES} size="lg" placeholder="x" />);
+      const trigger = screen.getByRole('combobox');
+      expect(trigger.className).toContain('h-[52px]');
+      expect(trigger.className).not.toContain('h-10 ');
+    });
+  });
 });
 
 describe('Combobox — multiple', () => {

@@ -1,6 +1,6 @@
 {
   "name": "@polaris/ui",
-  "version": "0.8.0-rc.9",
+  "version": "0.8.0-rc.10",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -63,7 +63,8 @@
     "dist",
     "src/styles/tokens.css",
     "src/styles/v4-theme.css",
-    "COMPONENTS.md"
+    "COMPONENTS.md",
+    "TOKENS.md"
   ],
   "sideEffects": [
     "**/*.css",
@@ -71,8 +72,9 @@
     "src/styles/v4-theme.css"
   ],
   "scripts": {
-    "build": "pnpm build:tokens && pnpm build:design-md && pnpm build:component-catalog && pnpm build:icons && pnpm build:file-icons && pnpm build:logos && pnpm build:ribbon-icons && tsup",
+    "build": "pnpm build:tokens && pnpm build:tokens-reference && pnpm build:design-md && pnpm build:component-catalog && pnpm build:icons && pnpm build:file-icons && pnpm build:logos && pnpm build:ribbon-icons && tsup",
     "build:tokens": "tsx scripts/build-tokens.ts",
+    "build:tokens-reference": "tsx scripts/build-tokens-reference.ts",
     "build:design-md": "tsx scripts/build-design-md.ts",
     "build:component-catalog": "tsx scripts/build-component-catalog.ts",
     "build:icons": "tsx scripts/build-icons.ts",
@@ -85,7 +87,7 @@
     "test": "pnpm gen:sources && vitest run && node --test 'test/**/*.test.mjs'",
     "test:watch": "vitest",
     "clean": "rm -rf dist .turbo src/icons src/file-icons src/logos src/ribbon-icons",
-    "gen:sources": "pnpm build:tokens && pnpm build:component-catalog && pnpm build:icons && pnpm build:file-icons && pnpm build:logos && pnpm build:ribbon-icons",
+    "gen:sources": "pnpm build:tokens && pnpm build:tokens-reference && pnpm build:component-catalog && pnpm build:icons && pnpm build:file-icons && pnpm build:logos && pnpm build:ribbon-icons",
     "prepare": "pnpm gen:sources"
   },
   "dependencies": {

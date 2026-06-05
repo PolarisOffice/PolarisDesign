@@ -627,6 +627,26 @@ export default function Components() {
             </div>
           </div>
           <div>
+            <p className="text-polaris-caption1 text-label-alternative mb-2">
+              ★ v0.8.0-rc.10 — <code>labelPlacement=&quot;above&quot;</code> + <code>SelectField size=&quot;lg&quot;</code> 행 정렬
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
+              <Input
+                labelPlacement="above"
+                label="구독 이름"
+                placeholder="예: 보안 감사용 webhook"
+                helperText="콘솔에 표시될 이름"
+              />
+              <SelectField label="전달 대상" defaultValue="slack" size="lg" helperText="알림이 도착할 채널">
+                <SelectItem value="slack">Slack</SelectItem>
+                <SelectItem value="teams">Microsoft Teams</SelectItem>
+              </SelectField>
+            </div>
+            <p className="text-polaris-helper text-label-alternative mt-2">
+              두 컨트롤 다 52px / above-label / sm radius 로 픽셀 정렬됨 (rc.9 까지는 40 vs 52 로 어긋났던 케이스).
+            </p>
+          </div>
+          <div>
             <p className="text-polaris-caption1 text-label-alternative mb-2">prefix / suffix / clearable</p>
             <Stack direction="row" gap={3} wrap>
               <Input label="금액" prefix="₩" suffix="KRW" clearable defaultValue="120,000" containerClassName="w-72" />

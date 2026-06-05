@@ -75,6 +75,12 @@ export interface DatePickerProps {
   containerClassName?: string;
   /** Stable id for the trigger (so external labels wire up). Auto-generated if omitted. */
   id?: string;
+  /**
+   * Trigger height. `'default'` (40px, Button size=md) is the v0.7 spec.
+   * `'lg'` (52px, rc.10 NEW) matches `<Input labelPlacement="above">`
+   * for shared-row layout. Default `'default'` for BC.
+   */
+  size?: 'default' | 'lg';
 }
 
 export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
@@ -96,6 +102,7 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
     error,
     containerClassName,
     id: providedId,
+    size = 'default',
   }, ref) => {
     const [open, setOpen] = useState(false);
     const generatedId = useId();
@@ -113,6 +120,9 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
             aria-label={ariaLabel}
             className={cn(
               'w-full justify-start font-normal',
+              // Size axis — rc.10. `lg` overrides Button md (40 / sm)
+              // to match Input height (52 / sm radius / 20px h-padding).
+              size === 'lg' && 'h-[52px] px-5',
               !value && 'text-label-alternative',
               isError && 'border border-state-error focus-visible:border-state-error',
               className,
@@ -194,6 +204,12 @@ export interface DateRangePickerProps {
   containerClassName?: string;
   /** Stable id for the trigger. Auto-generated if omitted. */
   id?: string;
+  /**
+   * Trigger height. `'default'` (40px) is the v0.7 spec. `'lg'` (52px,
+   * rc.10 NEW) matches `<Input labelPlacement="above">`. Default
+   * `'default'` for BC.
+   */
+  size?: 'default' | 'lg';
 }
 
 export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProps>(
@@ -211,6 +227,7 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
     error,
     containerClassName,
     id: providedId,
+    size = 'default',
   }, ref) => {
     const [open, setOpen] = useState(false);
     const generatedId = useId();
@@ -234,6 +251,7 @@ export const DateRangePicker = forwardRef<HTMLButtonElement, DateRangePickerProp
             aria-label={ariaLabel}
             className={cn(
               'w-full justify-start font-normal',
+              size === 'lg' && 'h-[52px] px-5',
               !value?.from && 'text-label-alternative',
               isError && 'border border-state-error focus-visible:border-state-error',
               className,

@@ -81,4 +81,19 @@ describe('DatePicker', () => {
       );
     });
   });
+
+  describe('size prop (rc.10)', () => {
+    it('default size keeps Button md (40px / h-10)', () => {
+      render(<DatePicker label="만료일" />);
+      const trigger = screen.getByRole('button', { name: '날짜 선택' });
+      expect(trigger.className).toContain('h-10');
+    });
+
+    it('size="lg" renders 52px trigger matching Input', () => {
+      render(<DatePicker label="만료일" size="lg" />);
+      const trigger = screen.getByRole('button', { name: '날짜 선택' });
+      expect(trigger.className).toContain('h-[52px]');
+      expect(trigger.className).toContain('px-5');
+    });
+  });
 });

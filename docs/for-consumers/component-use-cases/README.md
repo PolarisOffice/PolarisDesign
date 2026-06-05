@@ -11,7 +11,8 @@
 | 컴포넌트 | 가이드 | 핵심 결정 |
 |---|---|---|
 | `<Badge>` | [badge.md](badge.md) | tone × variant 매핑 + 도메인 상태 (active / 완료 / 거절 / 초안 등) ↔ Badge 조합 |
-| 폼 컴포넌트 묶음 | [form-patterns.md](form-patterns.md) | 6가지 폼 패턴 ↔ `<SelectField>` / `<CheckboxGroup>` / `<RadioGroup>` / `<FieldGroup>` 결정 가이드 (v0.8.0-rc.9 신규 컴포넌트 포함) |
+| 폼 컴포넌트 묶음 | [form-patterns.md](form-patterns.md) | 6가지 폼 패턴 ↔ `<SelectField>` / `<CheckboxGroup>` / `<RadioGroup>` / `<FieldGroup>` 결정 가이드 (v0.8.0-rc.9 신규 컴포넌트 포함, rc.10 RSC server-action 섹션 추가) |
+| variant 어휘 | [variant-matrix.md](variant-matrix.md) | 컴포넌트 × variant 매트릭스. Stat `positive` ↔ Badge/Alert `success` 매핑, Button 에 `success`가 없는 이유, 마이그레이션 cheat sheet (v0.8.0-rc.10 신규) |
 
 ### 토큰 namespace (예정 — KCAS 피드백 후속)
 
