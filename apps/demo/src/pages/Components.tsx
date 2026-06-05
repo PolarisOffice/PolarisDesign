@@ -137,6 +137,13 @@ import {
   AccordionContent,
   Combobox,
   type ComboboxOption,
+  // v0.8.0-rc.9 — form groups + field shell
+  SelectField,
+  CheckboxGroup,
+  CheckboxGroupItem,
+  RadioGroup,
+  RadioGroupItem,
+  FieldGroup,
 } from '@polaris/ui';
 import { BellIcon, ChevronRightIcon, DeleteIcon, DownloadIcon, FolderIcon, ImageIcon, PencilLineIcon, PlusIcon, SearchIcon, SettingsIcon } from '@polaris/ui/icons';
 import {
@@ -201,6 +208,11 @@ export default function Components() {
   const [tabVariant, setTabVariant] = useState<'pill' | 'underline'>('pill');
   const [comboCity, setComboCity] = useState<string | null>('seoul');
   const [comboTags, setComboTags] = useState<string[]>(['urgent']);
+  // v0.8.0-rc.9 — form groups demo state
+  const [webhookEvents, setWebhookEvents] = useState<string[]>(['view', 'download']);
+  const [webhookFreq, setWebhookFreq] = useState<string>('instant');
+  const [webhookTarget, setWebhookTarget] = useState<string>('slack');
+  const [webhookActive, setWebhookActive] = useState<boolean>(true);
   const contactForm = useForm<{ name: string; email: string }>({
     resolver: zodResolver(z.object({
       name: z.string().min(2, '2자 이상 입력하세요'),
@@ -666,47 +678,75 @@ export default function Components() {
         </div>
       </Section>
 
-      <Section cat="forms" current={catTab} title="4. Select — 단일 선택 (Radix)">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
+      <Section cat="forms" current={catTab} title="4. Select / SelectField — 단일 선택 (Radix)">
+        <Stack gap={5}>
           <div>
-            <label className="text-polaris-body2 font-medium text-label-normal mb-1.5 block">정렬</label>
-            <Select defaultValue="recent">
-              <SelectTrigger>
-                <SelectValue placeholder="정렬 기준 선택" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>기본</SelectLabel>
-                  <SelectItem value="recent">최근 수정순</SelectItem>
-                  <SelectItem value="name">이름순</SelectItem>
-                  <SelectItem value="size">크기순</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <p className="text-polaris-caption1 text-label-alternative mb-2">
+              ★ v0.8.0-rc.9 — <code>SelectField</code> (label/helperText/error 한 줄 wrapper)
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
+              <SelectField label="전달 대상" placeholder="선택하세요" defaultValue="slack" helperText="알림이 도착할 채널">
+                <SelectItem value="slack">Slack</SelectItem>
+                <SelectItem value="teams">Microsoft Teams</SelectItem>
+                <SelectItem value="webhook">Custom Webhook</SelectItem>
+              </SelectField>
+              <SelectField label="우선순위" placeholder="선택" error="필수 항목입니다">
+                <SelectItem value="urgent">긴급</SelectItem>
+                <SelectItem value="normal">보통</SelectItem>
+                <SelectItem value="low">낮음</SelectItem>
+              </SelectField>
+            </div>
           </div>
           <div>
-            <label className="text-polaris-body2 font-medium text-label-normal mb-1.5 block">파일 형식</label>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="형식 선택" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="docx">DOCX</SelectItem>
-                <SelectItem value="xlsx">XLSX</SelectItem>
-                <SelectItem value="pptx">PPTX</SelectItem>
-                <SelectItem value="pdf">PDF</SelectItem>
-                <SelectItem value="hwp">HWP</SelectItem>
-              </SelectContent>
-            </Select>
+            <p className="text-polaris-caption1 text-label-alternative mb-2">
+              기존 <code>Select</code> + sub-components (그룹 / separator / custom trigger 필요할 때)
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
+              <div>
+                <label className="text-polaris-body2 font-medium text-label-normal mb-1.5 block">정렬</label>
+                <Select defaultValue="recent">
+                  <SelectTrigger>
+                    <SelectValue placeholder="정렬 기준 선택" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>기본</SelectLabel>
+                      <SelectItem value="recent">최근 수정순</SelectItem>
+                      <SelectItem value="name">이름순</SelectItem>
+                      <SelectItem value="size">크기순</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-polaris-body2 font-medium text-label-normal mb-1.5 block">파일 형식</label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="형식 선택" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="docx">DOCX</SelectItem>
+                    <SelectItem value="xlsx">XLSX</SelectItem>
+                    <SelectItem value="pptx">PPTX</SelectItem>
+                    <SelectItem value="pdf">PDF</SelectItem>
+                    <SelectItem value="hwp">HWP</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           </div>
-        </div>
+        </Stack>
       </Section>
 
       <Section cat="forms" current={catTab} title="5. Combobox — searchable Select (single + multiple)">
+        <p className="text-polaris-caption1 text-label-alternative mb-3">
+          ★ v0.8.0-rc.9 — <code>label</code>/<code>helperText</code>/<code>error</code> prop 추가됨
+        </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-polaris-md">
           <Card variant="padded">
-            <p className="text-polaris-caption1 text-label-alternative mb-2">single — 도시 선택</p>
             <Combobox
+              label="대상 도시"
+              helperText="대한민국 광역시 중 1개 선택"
               options={[
                 { value: 'seoul',  label: '서울', description: '대한민국 수도' },
                 { value: 'busan',  label: '부산', description: '제2의 도시' },
@@ -725,9 +765,10 @@ export default function Components() {
             <p className="text-polaris-helper text-label-alternative mt-2">현재: {comboCity ?? '(없음)'}</p>
           </Card>
           <Card variant="padded">
-            <p className="text-polaris-caption1 text-label-alternative mb-2">multiple — 태그 선택 (groups)</p>
             <Combobox
               multiple
+              label="태그 (multiple + groups)"
+              error={comboTags.length === 0 ? '최소 1개 선택' : undefined}
               options={[
                 { value: 'urgent',  label: '긴급', group: '우선순위' },
                 { value: 'normal',  label: '보통', group: '우선순위' },
@@ -797,17 +838,28 @@ export default function Components() {
       </Section>
 
       <Section cat="forms" current={catTab} title="7. DatePicker / DateRangePicker — 날짜 선택">
+        <p className="text-polaris-caption1 text-label-alternative mb-3">
+          ★ v0.8.0-rc.9 — <code>label</code>/<code>helperText</code>/<code>error</code> prop 추가됨
+        </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card variant="padded">
-            <h3 className="text-polaris-heading4 mb-3">DatePicker (single)</h3>
-            <DatePicker value={pickedDate} onChange={setPickedDate} />
+            <DatePicker
+              label="만료일"
+              helperText="YYYY-MM-DD 형식"
+              value={pickedDate}
+              onChange={setPickedDate}
+            />
             {pickedDate && (
               <p className="mt-2 text-polaris-caption1 text-label-alternative">선택: {pickedDate.toLocaleDateString('ko-KR')}</p>
             )}
           </Card>
           <Card variant="padded">
-            <h3 className="text-polaris-heading4 mb-3">DateRangePicker</h3>
-            <DateRangePicker value={pickedRange} onChange={setPickedRange} />
+            <DateRangePicker
+              label="조회 기간"
+              helperText="최대 31일"
+              value={pickedRange}
+              onChange={setPickedRange}
+            />
             {pickedRange?.from && (
               <p className="mt-2 text-polaris-caption1 text-label-alternative">
                 {pickedRange.from.toLocaleDateString('ko-KR')}
@@ -816,6 +868,208 @@ export default function Components() {
             )}
           </Card>
         </div>
+      </Section>
+
+      <Section cat="forms" current={catTab} title="7.5. CheckboxGroup / RadioGroup — fieldset 기반 그룹 (v0.8.0-rc.9 NEW)">
+        <p className="text-polaris-caption1 text-label-alternative mb-3">
+          native <code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code> + 반응형 그리드 (cols 1~4) +
+          React Context 로 선택 누적 자동 관리. 단일 <code>&lt;Checkbox&gt;</code> 를 flex로 나열하던 안티
+          패턴을 대체합니다.
+        </p>
+        <Stack gap={5}>
+          <Card variant="padded">
+            <CheckboxGroup
+              label="구독 이벤트"
+              helperText="최소 1개 이상 선택"
+              cols={3}
+              value={webhookEvents}
+              onValueChange={setWebhookEvents}
+              error={webhookEvents.length === 0 ? '최소 1개 이상 선택해야 합니다' : undefined}
+            >
+              <CheckboxGroupItem value="view"             label="열람 성공(view)" />
+              <CheckboxGroupItem value="download"         label="다운로드(download)" />
+              <CheckboxGroupItem value="denied"           label="접근 거부(denied)" />
+              <CheckboxGroupItem value="email_submitted"  label="이메일 제출(email_submitted)" />
+              <CheckboxGroupItem value="password_failed"  label="비밀번호 실패(password_failed)" />
+              <CheckboxGroupItem value="signed"           label="서명 완료(signed)" />
+            </CheckboxGroup>
+            <p className="text-polaris-helper text-label-alternative mt-3">
+              현재 선택: {webhookEvents.length ? webhookEvents.join(', ') : '(없음)'}
+            </p>
+          </Card>
+
+          <Card variant="padded">
+            <RadioGroup
+              label="알림 빈도"
+              cols={3}
+              value={webhookFreq}
+              onValueChange={setWebhookFreq}
+              helperText="이벤트 누적이 많을 때는 일/시간 단위 권장"
+            >
+              <RadioGroupItem value="instant" label="즉시 (실시간)" helperText="이벤트 발생 즉시 전송" />
+              <RadioGroupItem value="hourly"  label="시간당 1회" />
+              <RadioGroupItem value="daily"   label="하루 1회" helperText="오전 9시 기준" />
+            </RadioGroup>
+            <p className="text-polaris-helper text-label-alternative mt-3">현재: {webhookFreq}</p>
+          </Card>
+
+          <Card variant="padded">
+            <p className="text-polaris-caption1 text-label-alternative mb-2">
+              AI variant — NOVA Purple (Button variant=&quot;ai&quot; 와 페어)
+            </p>
+            <RadioGroup variant="ai" label="NOVA 응답 스타일" defaultValue="concise" cols={2}>
+              <RadioGroupItem value="concise"  label="간결" helperText="핵심만 1-2 문장" />
+              <RadioGroupItem value="detailed" label="상세" helperText="배경 + 근거 포함" />
+            </RadioGroup>
+          </Card>
+        </Stack>
+      </Section>
+
+      <Section cat="forms" current={catTab} title="7.6. FieldGroup — visual grouping container (v0.8.0-rc.9 NEW)">
+        <p className="text-polaris-caption1 text-label-alternative mb-3">
+          여러 폼 필드를 *시각적으로* 하나의 단위로 묶을 때. CheckboxGroup/RadioGroup 의 *semantic* group 과 구분.
+          <code>variant=&quot;boxed&quot;</code> 는 KCAS-platform 피드백의 옵션 박스 패턴.
+        </p>
+        <Stack gap={4}>
+          <div>
+            <p className="text-polaris-caption1 text-label-alternative mb-2">
+              <code>variant=&quot;plain&quot;</code> (기본) — 라벨링만, 배경 없음
+            </p>
+            <Card variant="padded">
+              <FieldGroup label="기본 정보" description="모든 필드는 필수입니다">
+                <Input label="구독 이름" placeholder="예: 보안 감사용" />
+                <SelectField label="유형" placeholder="선택">
+                  <SelectItem value="prod">프로덕션</SelectItem>
+                  <SelectItem value="staging">스테이징</SelectItem>
+                </SelectField>
+              </FieldGroup>
+            </Card>
+          </div>
+          <div>
+            <p className="text-polaris-caption1 text-label-alternative mb-2">
+              <code>variant=&quot;boxed&quot;</code> — 회색 surface 강조 (옵션 박스)
+            </p>
+            <Card variant="padded">
+              <Stack gap={3}>
+                <FieldGroup variant="boxed">
+                  <label className="flex items-start gap-2 text-polaris-body2">
+                    <Checkbox
+                      checked={webhookActive}
+                      onCheckedChange={(v) => setWebhookActive(v === true)}
+                    />
+                    <span className="flex flex-col">
+                      <span>즉시 활성화</span>
+                      <span className="text-polaris-helper text-label-alternative">
+                        저장 후 바로 이벤트 수신 시작
+                      </span>
+                    </span>
+                  </label>
+                </FieldGroup>
+                <FieldGroup variant="boxed" label="고급 옵션" description="대부분의 경우 기본값 권장">
+                  <Switch label="HMAC 서명 검증" defaultChecked />
+                  <Switch label="재시도 자동화" defaultChecked />
+                  <Switch label="감사 로그 90일 보관" />
+                </FieldGroup>
+              </Stack>
+            </Card>
+          </div>
+        </Stack>
+      </Section>
+
+      <Section cat="forms" current={catTab} title="7.7. 종합 예시 — Webhook 구독 폼 (v0.8.0-rc.9 form-patterns.md)">
+        <p className="text-polaris-caption1 text-label-alternative mb-3">
+          KCAS-platform + webhook 컨슈머 피드백 → 6가지 폼 패턴이 한 폼에 종합. 자세한 해설은{' '}
+          <a
+            href="https://github.com/PolarisOffice/PolarisDesign/blob/main/docs/for-consumers/component-use-cases/form-patterns.md"
+            target="_blank"
+            rel="noreferrer"
+            className="underline text-accent-brand-normal"
+          >
+            docs/for-consumers/component-use-cases/form-patterns.md
+          </a>
+        </p>
+        <Card variant="padded">
+          <Stack gap={4}>
+            <FieldGroup label="기본 정보">
+              <Input label="구독 이름" placeholder="예: 보안 감사용 webhook" required />
+              <SelectField
+                label="전달 대상"
+                value={webhookTarget}
+                onValueChange={setWebhookTarget}
+                helperText="알림이 도착할 채널"
+              >
+                <SelectItem value="slack">Slack</SelectItem>
+                <SelectItem value="teams">Microsoft Teams</SelectItem>
+                <SelectItem value="webhook">Custom Webhook</SelectItem>
+              </SelectField>
+            </FieldGroup>
+
+            <Input
+              label="Webhook URL"
+              type="url"
+              placeholder="https://hooks.slack.com/services/..."
+              helperText="HTTPS 만 허용"
+              required
+            />
+
+            <FieldGroup variant="boxed">
+              <label className="flex items-start gap-2 text-polaris-body2">
+                <Checkbox
+                  checked={webhookActive}
+                  onCheckedChange={(v) => setWebhookActive(v === true)}
+                />
+                <span className="flex flex-col">
+                  <span>즉시 활성화</span>
+                  <span className="text-polaris-helper text-label-alternative">
+                    저장 후 바로 이벤트 수신 시작
+                  </span>
+                </span>
+              </label>
+            </FieldGroup>
+
+            <CheckboxGroup
+              label="구독 이벤트"
+              helperText="최소 1개 이상 선택"
+              cols={3}
+              value={webhookEvents}
+              onValueChange={setWebhookEvents}
+            >
+              <CheckboxGroupItem value="view"             label="열람 성공(view)" />
+              <CheckboxGroupItem value="download"         label="다운로드(download)" />
+              <CheckboxGroupItem value="denied"           label="접근 거부(denied)" />
+              <CheckboxGroupItem value="email_submitted"  label="이메일 제출(email_submitted)" />
+              <CheckboxGroupItem value="password_failed"  label="비밀번호 실패(password_failed)" />
+            </CheckboxGroup>
+
+            <RadioGroup
+              label="알림 빈도"
+              cols={3}
+              value={webhookFreq}
+              onValueChange={setWebhookFreq}
+            >
+              <RadioGroupItem value="instant" label="즉시 (실시간)" />
+              <RadioGroupItem value="hourly"  label="시간당 1회" />
+              <RadioGroupItem value="daily"   label="하루 1회" />
+            </RadioGroup>
+
+            <div className="flex gap-polaris-2xs justify-end">
+              <Button variant="ghost" type="button">취소</Button>
+              <Button
+                onClick={() =>
+                  pushToast(
+                    'success',
+                    'Webhook 구독 저장됨',
+                    `${webhookTarget} · ${webhookFreq} · ${webhookEvents.length}개 이벤트${
+                      webhookActive ? ' · 즉시 활성화' : ''
+                    }`,
+                  )
+                }
+              >
+                저장
+              </Button>
+            </div>
+          </Stack>
+        </Card>
       </Section>
 
       <Section cat="forms" current={catTab} title="8. DateTimeInput / TimeInput — native input wrap">
